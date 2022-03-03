@@ -3,6 +3,7 @@
 ## Assignment
 
 [Phase-1](https://github.com/vicentecsousa/MAGNAEATS/blob/master/rsc/so2021_2022-projecto1-fase1.pdf)
+
 [Phase-2](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
 
 ## How to use
