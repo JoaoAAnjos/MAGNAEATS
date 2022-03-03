@@ -1,23 +1,28 @@
-# Projeto de So
+# Operative Systems Project
 
-## Enunciado
+## Assignment
 
-[Fase-1](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
-[Fase-2](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
+[Phase-1](https://github.com/vicentecsousa/MAGNAEATS/blob/master/rsc/so2021_2022-projecto1-fase1.pdf)
+[Phase-2](https://www.youtube.com/watch?v=dQw4w9WgXcQ)
 
-## Como usar
+## How to use
 
-### 1. clonar
+### 1. Clone
 
-usar um dos seguintes comandos
+Use one of the following
 
 ```sh
-git clone 
-git clone 
-cd folder
+git clone https://github.com/vicentecsousa/MAGNAEATS.git
+git clone git@github.com:vicentecsousa/MAGNAEATS.git
 ```
 
-### 2. compilar
+then cd to the folder
+
+```
+cd MAGNAEATS
+```
+
+### 2. Compile
 
 ```sh
 ## Normal
@@ -26,10 +31,16 @@ make
 make debug
 ```
 
-### 3. correr
+### 3. Test
+
+At the moment there are no tests
+
+### 4. Run
 
 ```sh
 ./bin/magnaeats [max_ops] [buffers_size] [n_restaurants n_drivers] [n_clients]
 ```
+
+
 
 
