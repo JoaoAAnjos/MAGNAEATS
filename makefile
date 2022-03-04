@@ -16,7 +16,7 @@ OUTNAME = magnaeats
 REQUIREDOBJ = client.o driver.o main.o memory.o process.o restaurant.o
 
 ## Create flags var
-FLAGS = -fdiagnostics-color=always
+FLAGS = -lrt -fdiagnostics-color=always
 
 ## Main target
 
