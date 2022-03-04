@@ -4,5 +4,11 @@ bin/
 # Objects
 obj/
 
-
+# Given includes so auto format on save is not saved
+include/client.h
+include/driver.h
+include/main.h
+include/memory.h
+include/process.h
+include/restaurant.h
 

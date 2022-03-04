@@ -43,5 +43,9 @@ At the moment there are no tests
 ```
 
 
+## How to work
+
+Open vscode install c\c++ and go for it
+
 
 
