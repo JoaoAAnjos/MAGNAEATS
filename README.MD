@@ -60,6 +60,7 @@ Run this to prevent changing vscode project settings with your own personal sett
 
 ```sh
 git update-index --skip-worktree include/client.h
+```
 
 Open vscode install c\c++ and go for it
 
