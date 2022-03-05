@@ -1,18 +1,13 @@
 {
     "configurations": [
         {
-            "name": "Linux",
+            "name": "MAGNAEATS",
             "includePath": [
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/include"
             ],
-            "defines": [],
-            "compilerPath": "/usr/bin/gcc",
-            "cStandard": "gnu17",
-            "cppStandard": "c++17",
-            "intelliSenseMode": "linux-gcc-x64"
+            "defines": []
         }
     ],
     "version": 4
 }
-
