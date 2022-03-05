@@ -59,7 +59,7 @@ git update-index --skip-worktree include/restaurant.h
 Run this to prevent changing vscode project settings with your own personal settings
 
 ```sh
-git update-index --skip-worktree include/client.h
+git update-index --skip-worktree .vscode/*
 ```
 
 Open vscode install c\c++ and go for it
