@@ -36,6 +36,12 @@ make debug
 
 At the moment there are no tests
 
+In the future run test by executing
+
+```sh
+make test
+```
+
 ### 4. Run
 
 ```sh
@@ -63,6 +69,4 @@ git update-index --skip-worktree .vscode/*
 ```
 
 Open vscode install c\c++ and go for it
-
-
 
