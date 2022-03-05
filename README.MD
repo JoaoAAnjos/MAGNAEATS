@@ -45,6 +45,17 @@ At the moment there are no tests
 
 ## How to work
 
+After cloning run to prevent changing the include files by mistake
+
+```sh
+git update-index --skip-worktree include/client.h
+git update-index --skip-worktree include/driver.h
+git update-index --skip-worktree include/m
+git update-index --skip-worktree include/main.h
+git update-index --skip-worktree include/process.h
+git update-index --skip-worktree include/restaurant.h
+```
+
 Open vscode install c\c++ and go for it
 
 
