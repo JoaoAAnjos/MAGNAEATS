@@ -1,5 +1,5 @@
 ## Grupo 006
-## Pedro trindade [NUMERO AQUI JA] 
+## Pedro Trindade 56342
 ## Vicente Sousa 55386
 ## João Anjos 54476
 
