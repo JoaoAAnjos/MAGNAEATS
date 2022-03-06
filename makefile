@@ -9,6 +9,7 @@ INCLUDEDIR = include
 OBJDIR = obj
 SRCDIR = src
 BINDIR = bin
+OUTNAME = MAGNAEATS
 
 ## Define objects needed for compilation
 
@@ -26,15 +27,12 @@ debug: FLAGS +=-g -Wall
 debug: all
 
 ## create obj files
-%.o: $(SRCDIR)/*/%.c
+%.o: $(SRCDIR)/%.c
 	$(CC) $(FLAGS) -o $(addprefix $(OBJDIR)/,$@) -c $< -I $(INCLUDEDIR)
 
-## create obj files depth 2
-%.o: $(SRCDIR)/*/*/%.c
-	$(CC) $(FLAGS) -o $(addprefix $(OBJDIR)/,$@) -c $< -I $(INCLUDEDIR)
-
-## TODO: E PARA FAZER ISTO SEUS MERDAS
-compile:
+## compiles the obj files to an executable
+compile: $(REQUIREDOBJ)
+	$(CC) $(FLAGS) $(addprefix $(OBJDIR)/,$^) -o $(OUTNAME)
 
 ## clean folders
 clean:
