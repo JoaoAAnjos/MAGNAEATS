@@ -9,18 +9,18 @@ INCLUDEDIR = include
 OBJDIR = obj
 SRCDIR = src
 BINDIR = bin
-OUTNAME = MAGNAEATS
+OUTNAME = magnaeats
 
 ## Define objects needed for compilation
 
 REQUIREDOBJ = client.o driver.o main.o memory.o process.o restaurant.o
 
 ## Create flags var
-FLAGS = 
+FLAGS = -fdiagnostics-color=always
 
 ## Main target
 
-all: clean compile
+all: clean setup compile
 
 ## add debug flag then proceed to do a full compilation
 debug: FLAGS +=-g -Wall
@@ -39,6 +39,13 @@ clean:
 	rm -rf $(OBJDIR)/*
 	rm -rf $(BINDIR)/*
 
+setup:
+	mkdir -p $(OBJDIR)
+	mkdir -p $(BINDIR)
+
 ## find stuff marked to do in the project
 wegucci:
-	find . | grep -R TODO
+	cd src && find . | grep -R TODO
+
+grind:
+	valgrind --leak-check=full ./bin/MAGNAEATS
