@@ -1,5 +1,7 @@
 #include "client.h"
 
+#include <stdio.h>
+
 /* Função principal de um Cliente. Deve executar um ciclo infinito onde em
  * cada iteração lê uma operação da main e data->terminate ainda for igual a 0,
  * processa-a e guarda o resultado no histórico de operações da Main.
@@ -9,14 +11,17 @@
  * estes passos, pode usar os outros métodos auxiliares definidos em client.h.
  */
 int execute_client(int client_id, struct communication_buffers* buffers, struct main_data* data) {
-    int op_proc;
+    int op_proc = 0;
     while (1) {
-        struct operation* op;
+        struct operation* op = NULL;
         client_get_operation(op, client_id, buffers, data);
-        if (!data->terminate) {
+        if (op != NULL && !data->terminate) {
+            if (op->id != -1) {
+                client_process_operation(op, client_id, data, &op_proc);
+            }
+        } else if (data->terminate) {
             return op_proc;
         }
-        client_process_operation(op, client_id, data, op_proc);
     }
 }
 
@@ -25,7 +30,7 @@ int execute_client(int client_id, struct communication_buffers* buffers, struct 
  * verificar se data->terminate tem valor 1. Em caso afirmativo, retorna imediatamente da função.
  */
 void client_get_operation(struct operation* op, int client_id, struct communication_buffers* buffers, struct main_data* data) {
-    if (!data->terminate) {
+    if (data->terminate) {
         return;
     }
     read_driver_client_buffer(buffers->driv_cli, client_id, data->buffers_size, op);
