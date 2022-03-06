@@ -9,7 +9,7 @@ INCLUDEDIR = include
 OBJDIR = obj
 SRCDIR = src
 BINDIR = bin
-OUTNAME = magnaeats
+OUTNAME = MAGNAEATS
 
 ## Define objects needed for compilation
 
