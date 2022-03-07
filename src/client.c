@@ -11,16 +11,14 @@
  * estes passos, pode usar os outros métodos auxiliares definidos em client.h.
  */
 int execute_client(int client_id, struct communication_buffers* buffers, struct main_data* data) {
-    int op_proc = 0;
+    int counter = 0;
     while (1) {
         struct operation* op = NULL;
         client_get_operation(op, client_id, buffers, data);
-        if (op != NULL && !*data->terminate) {
-            if (op->id != -1) {
-                client_process_operation(op, client_id, data, &op_proc);
-            }
-        } else if (*data->terminate) {
-            return op_proc;
+        if (*data->terminate) {
+            return counter;
+        } else if (op != NULL && op->id != -1) {
+            client_process_operation(op, client_id, data, &counter);
         }
     }
 }

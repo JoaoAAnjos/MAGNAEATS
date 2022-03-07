@@ -15,13 +15,11 @@ int execute_restaurant(int rest_id, struct communication_buffers* buffers, struc
     while (1) {
         struct operation* op = NULL;
         restaurant_receive_operation(op, rest_id, buffers, data);
-        if (op != NULL && !*data->terminate) {
-            if (op->id != -1) {
-                restaurant_process_operation(op, rest_id, data, &counter);
-                restaurant_forward_operation(op, buffers, data);
-            }
-        } else if (*data->terminate) {
+        if (*data->terminate) {
             return counter;
+        } else if (op != NULL && op->id != -1) {
+            restaurant_process_operation(op, rest_id, data, &counter);
+            restaurant_forward_operation(op, buffers, data);
         }
     }
 }
@@ -56,4 +54,5 @@ void restaurant_process_operation(struct operation* op, int rest_id, struct main
  * depois de escrever.
  */
 void restaurant_forward_operation(struct operation* op, struct communication_buffers* buffers, struct main_data* data) {
+    write_rest_driver_buffer(buffers->rest_driv, data->buffers_size, op);
 }
