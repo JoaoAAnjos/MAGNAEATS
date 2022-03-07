@@ -15,7 +15,12 @@ void main_args(int argc, char* argv[], struct main_data* data) {
 * main_data. Para tal, pode ser usada a função create_dynamic_memory.
 */
 void create_dynamic_memory_buffers(struct main_data* data) {
-
+    data->restaurant_pids = create_dynamic_memory(data->n_restaurants);
+    data->driver_pids = create_dynamic_memory(data->n_drivers);
+    data->client_pids = create_dynamic_memory(data->n_clients);
+    data->restaurant_stats = create_dynamic_memory(data->max_ops);
+    data->driver_stats = create_dynamic_memory(data->max_ops);
+    data->client_stats = create_dynamic_memory(data->max_ops);
 }
 
 /* Função que reserva a memória partilhada necessária para a execução do
@@ -96,7 +101,7 @@ void write_statistics(struct main_data* data) {
 * reservados na estrutura data.
 */
 void destroy_memory_buffers(struct main_data* data, struct communication_buffers* buffers) {
-    
+
 }
 
 int main(int argc, char* argv[]) {
