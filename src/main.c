@@ -29,6 +29,10 @@ void create_dynamic_memory_buffers(struct main_data* data) {
  * Para tal, pode ser usada a função create_shared_memory.
  */
 void create_shared_memory_buffers(struct main_data* data, struct communication_buffers* buffers) {
+    buffers->main_rest = create_shared_memory("SHM_MAIN_REST_BUFFER", sizeof(struct rnd_access_buffer));
+    data->results = create_shared_memory("SHM_RESULTS", sizeof(struct operation));
+    //TODO Char pointer
+    data->terminate = create_shared_memory("SHM_TERMINATE", sizeof(int));
 }
 
 /* Função que inicia os processos dos restaurantes, motoristas e
