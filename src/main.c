@@ -106,6 +106,9 @@ void wait_processes(struct main_data* data) {
  * operações foram processadas por cada restaurante, motorista e cliente.
  */
 void write_statistics(struct main_data* data) {
+    printf("Restaurant stats: %d \n", *(data->restaurant_stats));
+    printf("Driver stats: %d \n", *(data->driver_stats));
+    printf("Client stats: %d \n", *(data->client_stats));
 }
 
 /* Função que liberta todos os buffers de memória dinâmica e partilhada previamente
