@@ -1,6 +1,8 @@
 #include "main.h"
-#include "process.h"
+
 #include <stdio.h>
+
+#include "process.h"
 
 /* Função que lê os argumentos da aplicação, nomeadamente o número
  * máximo de operações, o tamanho dos buffers de memória partilhada
@@ -14,7 +16,7 @@ void main_args(int argc, char* argv[], struct main_data* data) {
     data->n_restaurants = atoi(argv[3]);
     data->n_drivers = atoi(argv[4]);
     data->n_clients = atoi(argv[6]);
-    //hardcoded, argc doesnt make much sense ? check main
+    // hardcoded, argc doesnt make much sense ? check main
 }
 
 /* Função que reserva a memória dinâmica necessária para a execução
@@ -22,12 +24,12 @@ void main_args(int argc, char* argv[], struct main_data* data) {
  * main_data. Para tal, pode ser usada a função create_dynamic_memory.
  */
 void create_dynamic_memory_buffers(struct main_data* data) {
-    data->restaurant_pids = create_dynamic_memory(data->n_restaurants*sizeof(int));
-    data->driver_pids = create_dynamic_memory(data->n_drivers*sizeof(int));
-    data->client_pids = create_dynamic_memory(data->n_clients*sizeof(int));
-    data->restaurant_stats = create_dynamic_memory(data->max_ops*sizeof(int));
-    data->driver_stats = create_dynamic_memory(data->max_ops*sizeof(int));
-    data->client_stats = create_dynamic_memory(data->max_ops*sizeof(int));
+    data->restaurant_pids = create_dynamic_memory(data->n_restaurants * sizeof(int));
+    data->driver_pids = create_dynamic_memory(data->n_drivers * sizeof(int));
+    data->client_pids = create_dynamic_memory(data->n_clients * sizeof(int));
+    data->restaurant_stats = create_dynamic_memory(data->max_ops * sizeof(int));
+    data->driver_stats = create_dynamic_memory(data->max_ops * sizeof(int));
+    data->client_stats = create_dynamic_memory(data->max_ops * sizeof(int));
 }
 
 /* Função que reserva a memória partilhada necessária para a execução do
@@ -58,14 +60,14 @@ void create_shared_memory_buffers(struct main_data* data, struct communication_b
  * da estrutura data.
  */
 void launch_processes(struct communication_buffers* buffers, struct main_data* data) {
-    for(int i=0; i < data->n_restaurants; i++) {
-        *(data->restaurant_pids+i) = launch_restaurant(i, buffers, data);
+    for (int i = 0; i < data->n_restaurants; i++) {
+        *(data->restaurant_pids + i) = launch_restaurant(i, buffers, data);
     }
-    for(int j=0; j < data->n_drivers; j++) {
-        *(data->driver_pids+j) = launch_driver(j, buffers, data);
+    for (int j = 0; j < data->n_drivers; j++) {
+        *(data->driver_pids + j) = launch_driver(j, buffers, data);
     }
-    for(int k=0; k < data->n_clients; k++) {
-        *(data->client_pids+k) = launch_client(k, buffers, data);
+    for (int k = 0; k < data->n_clients; k++) {
+        *(data->client_pids + k) = launch_client(k, buffers, data);
     }
 }
 
@@ -86,7 +88,7 @@ void user_interaction(struct communication_buffers* buffers, struct main_data* d
 void create_request(int* op_counter, struct communication_buffers* buffers, struct main_data* data) {
     struct operation* op = malloc(sizeof(struct operation));
     op->id = *op_counter;
-    //dados passados em argumento ?
+    // dados passados em argumento ?
     write_main_rest_buffer(buffers->main_rest, data->buffers_size, op);
     printf("%d", op->id);
     *op_counter++;
@@ -99,7 +101,7 @@ void create_request(int* op_counter, struct communication_buffers* buffers, stru
  * e os ids do restaurante, motorista, e cliente que a receberam e processaram.
  */
 void read_status(struct main_data* data) {
-    //id da operação ???
+    // id da operação ???
 }
 
 /* Função que termina a execução do programa MAGNAEATS. Deve começar por
@@ -144,13 +146,13 @@ void destroy_memory_buffers(struct main_data* data, struct communication_buffers
     destroy_dynamic_memory(data->restaurant_stats);
     destroy_dynamic_memory(data->driver_stats);
     destroy_dynamic_memory(data->client_stats);
-    //main_rest buffer
+    // main_rest buffer
     destroy_shared_memory(STR_SHM_MAIN_REST_PTR, buffers->main_rest->ptrs, sizeof(int));
     destroy_shared_memory(STR_SHM_MAIN_REST_BUFFER, buffers->main_rest->buffer, data->buffers_size);
-    //rest_driv buffer
+    // rest_driv buffer
     destroy_shared_memory(STR_SHM_REST_DRIVER_PTR, buffers->rest_driv->ptrs, sizeof(struct pointers));
     destroy_shared_memory(STR_SHM_REST_DRIVER_BUFFER, buffers->rest_driv->buffer, data->buffers_size);
-    //driv_cli buffer
+    // driv_cli buffer
     destroy_shared_memory(STR_SHM_DRIVER_CLIENT_PTR, buffers->driv_cli->ptrs, sizeof(int));
     destroy_shared_memory(STR_SHM_DRIVER_CLIENT_BUFFER, buffers->driv_cli->buffer, data->buffers_size);
     // result and terminate
