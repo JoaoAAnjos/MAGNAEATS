@@ -83,6 +83,7 @@ void create_request(int* op_counter, struct communication_buffers* buffers, stru
  * e os ids do restaurante, motorista, e cliente que a receberam e processaram.
  */
 void read_status(struct main_data* data) {
+    //id da operação ???
 }
 
 /* Função que termina a execução do programa MAGNAEATS. Deve começar por
@@ -93,6 +94,10 @@ void read_status(struct main_data* data) {
  * reservadas. Para tal, pode usar as outras funções auxiliares do main.h.
  */
 void stop_execution(struct main_data* data, struct communication_buffers* buffers) {
+    *data->terminate = 1;
+    wait_processes(data);
+    write_statistics(data);
+    destroy_memory_buffers(data, buffers);
 }
 
 /* Função que espera que todos os processos previamente iniciados terminem,
