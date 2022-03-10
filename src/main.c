@@ -1,4 +1,5 @@
 #include "main.h"
+#include "process.h"
 #include <stdio.h>
 
 /* Função que lê os argumentos da aplicação, nomeadamente o número
@@ -8,6 +9,12 @@
  * estrutura main_data.
  */
 void main_args(int argc, char* argv[], struct main_data* data) {
+    data->max_ops = atoi(argv[1]);
+    data->buffers_size = atoi(argv[2]);
+    data->n_restaurants = atoi(argv[3]);
+    data->n_drivers = atoi(argv[4]);
+    data->n_clients = atoi(argv[6]);
+    //hardcoded, argc doesnt make much sense ? check main
 }
 
 /* Função que reserva a memória dinâmica necessária para a execução
@@ -15,12 +22,12 @@ void main_args(int argc, char* argv[], struct main_data* data) {
  * main_data. Para tal, pode ser usada a função create_dynamic_memory.
  */
 void create_dynamic_memory_buffers(struct main_data* data) {
-    data->restaurant_pids = create_dynamic_memory(data->n_restaurants);
-    data->driver_pids = create_dynamic_memory(data->n_drivers);
-    data->client_pids = create_dynamic_memory(data->n_clients);
-    data->restaurant_stats = create_dynamic_memory(data->max_ops);
-    data->driver_stats = create_dynamic_memory(data->max_ops);
-    data->client_stats = create_dynamic_memory(data->max_ops);
+    data->restaurant_pids = create_dynamic_memory(data->n_restaurants*sizeof(int));
+    data->driver_pids = create_dynamic_memory(data->n_drivers*sizeof(int));
+    data->client_pids = create_dynamic_memory(data->n_clients*sizeof(int));
+    data->restaurant_stats = create_dynamic_memory(data->max_ops*sizeof(int));
+    data->driver_stats = create_dynamic_memory(data->max_ops*sizeof(int));
+    data->client_stats = create_dynamic_memory(data->max_ops*sizeof(int));
 }
 
 /* Função que reserva a memória partilhada necessária para a execução do
@@ -51,6 +58,15 @@ void create_shared_memory_buffers(struct main_data* data, struct communication_b
  * da estrutura data.
  */
 void launch_processes(struct communication_buffers* buffers, struct main_data* data) {
+    for(int i=0; i < data->n_restaurants; i++) {
+        *(data->restaurant_pids+i) = launch_restaurant(i, buffers, data);
+    }
+    for(int j=0; j < data->n_drivers; j++) {
+        *(data->driver_pids+j) = launch_driver(j, buffers, data);
+    }
+    for(int k=0; k < data->n_clients; k++) {
+        *(data->client_pids+k) = launch_client(k, buffers, data);
+    }
 }
 
 /* Função que faz interação do utilizador, podendo receber 4 comandos:
