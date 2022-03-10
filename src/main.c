@@ -40,9 +40,9 @@ void create_shared_memory_buffers(struct main_data* data, struct communication_b
     buffers->driv_cli->ptrs = create_shared_memory(STR_SHM_DRIVER_CLIENT_PTR, sizeof(int));
     buffers->driv_cli->buffer = create_shared_memory(STR_SHM_DRIVER_CLIENT_BUFFER, data->buffers_size);
     // result and terminate
-    data->results = create_shared_memory("SHM_RESULTS", sizeof(struct operation));
+    data->results = create_shared_memory(STR_SHM_RESULTS, sizeof(struct operation));
     // TODO Char pointer
-    data->terminate = create_shared_memory("SHM_TERMINATE", sizeof(int));
+    data->terminate = create_shared_memory(STR_SHM_TERMINATE, sizeof(int));
 }
 
 /* Função que inicia os processos dos restaurantes, motoristas e
@@ -112,6 +112,26 @@ void write_statistics(struct main_data* data) {
  * reservados na estrutura data.
  */
 void destroy_memory_buffers(struct main_data* data, struct communication_buffers* buffers) {
+    //*_pids
+    destroy_dynamic_memory(data->restaurant_pids);
+    destroy_dynamic_memory(data->driver_pids);
+    destroy_dynamic_memory(data->client_pids);
+    //*_stats
+    destroy_dynamic_memory(data->restaurant_stats);
+    destroy_dynamic_memory(data->driver_stats);
+    destroy_dynamic_memory(data->client_stats);
+    //main_rest buffer
+    destroy_shared_memory(STR_SHM_MAIN_REST_PTR, buffers->main_rest->ptrs, sizeof(int));
+    destroy_shared_memory(STR_SHM_MAIN_REST_BUFFER, buffers->main_rest->buffer, data->buffers_size);
+    //rest_driv buffer
+    destroy_shared_memory(STR_SHM_REST_DRIVER_PTR, buffers->rest_driv->ptrs, sizeof(struct pointers));
+    destroy_shared_memory(STR_SHM_REST_DRIVER_BUFFER, buffers->rest_driv->buffer, data->buffers_size);
+    //driv_cli buffer
+    destroy_shared_memory(STR_SHM_DRIVER_CLIENT_PTR, buffers->driv_cli->ptrs, sizeof(int));
+    destroy_shared_memory(STR_SHM_DRIVER_CLIENT_BUFFER, buffers->driv_cli->buffer, data->buffers_size);
+    // result and terminate
+    destroy_shared_memory(STR_SHM_RESULTS, data->results, sizeof(struct operation));
+    destroy_shared_memory(STR_SHM_TERMINATE, data->terminate, sizeof(int));
 }
 
 int main(int argc, char* argv[]) {
