@@ -1,4 +1,5 @@
 #include "main.h"
+#include <stdio.h>
 
 /* Função que lê os argumentos da aplicação, nomeadamente o número
  * máximo de operações, o tamanho dos buffers de memória partilhada
@@ -30,15 +31,12 @@ void create_dynamic_memory_buffers(struct main_data* data) {
  */
 void create_shared_memory_buffers(struct main_data* data, struct communication_buffers* buffers) {
     // main_rest buffer
-    buffers->main_rest = malloc(sizeof(struct rnd_access_buffer));
     buffers->main_rest->ptrs = create_shared_memory(STR_SHM_MAIN_REST_PTR, sizeof(int));
     buffers->main_rest->buffer = create_shared_memory(STR_SHM_MAIN_REST_BUFFER, data->buffers_size);
     // rest_driv buffer
-    buffers->rest_driv = malloc(sizeof(struct circular_buffer));
     buffers->rest_driv->ptrs = create_shared_memory(STR_SHM_REST_DRIVER_PTR, sizeof(struct pointers));
     buffers->rest_driv->buffer = create_shared_memory(STR_SHM_REST_DRIVER_BUFFER, data->buffers_size);
     // driv_cli buffer
-    buffers->driv_cli = malloc(sizeof(struct rnd_access_buffer));
     buffers->driv_cli->ptrs = create_shared_memory(STR_SHM_DRIVER_CLIENT_PTR, sizeof(int));
     buffers->driv_cli->buffer = create_shared_memory(STR_SHM_DRIVER_CLIENT_BUFFER, data->buffers_size);
     // result and terminate
@@ -70,7 +68,12 @@ void user_interaction(struct communication_buffers* buffers, struct main_data* d
  * Imprime o id da operação e incrementa o contador de operações op_counter.
  */
 void create_request(int* op_counter, struct communication_buffers* buffers, struct main_data* data) {
-
+    struct operation* op = malloc(sizeof(struct operation));
+    op->id = *op_counter;
+    //dados passados em argumento ?
+    write_main_rest_buffer(buffers->main_rest, data->buffers_size, op);
+    printf("%d", op->id);
+    *op_counter++;
 }
 
 /* Função que lê um id de operação do utilizador e verifica se a mesma
