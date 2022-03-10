@@ -29,9 +29,21 @@ void create_dynamic_memory_buffers(struct main_data* data) {
  * Para tal, pode ser usada a função create_shared_memory.
  */
 void create_shared_memory_buffers(struct main_data* data, struct communication_buffers* buffers) {
-    buffers->main_rest = create_shared_memory("SHM_MAIN_REST_BUFFER", sizeof(struct rnd_access_buffer));
+    // main_rest buffer
+    buffers->main_rest = malloc(sizeof(struct rnd_access_buffer));
+    buffers->main_rest->ptrs = create_shared_memory(STR_SHM_MAIN_REST_PTR, sizeof(int));
+    buffers->main_rest->buffer = create_shared_memory(STR_SHM_MAIN_REST_BUFFER, data->buffers_size);
+    // rest_driv buffer
+    buffers->rest_driv = malloc(sizeof(struct circular_buffer));
+    buffers->rest_driv->ptrs = create_shared_memory(STR_SHM_REST_DRIVER_PTR, sizeof(struct pointers));
+    buffers->rest_driv->buffer = create_shared_memory(STR_SHM_REST_DRIVER_BUFFER, data->buffers_size);
+    // driv_cli buffer
+    buffers->driv_cli = malloc(sizeof(struct rnd_access_buffer));
+    buffers->driv_cli->ptrs = create_shared_memory(STR_SHM_DRIVER_CLIENT_PTR, sizeof(int));
+    buffers->driv_cli->buffer = create_shared_memory(STR_SHM_DRIVER_CLIENT_BUFFER, data->buffers_size);
+    // result and terminate
     data->results = create_shared_memory("SHM_RESULTS", sizeof(struct operation));
-    //TODO Char pointer
+    // TODO Char pointer
     data->terminate = create_shared_memory("SHM_TERMINATE", sizeof(int));
 }
 
@@ -58,6 +70,7 @@ void user_interaction(struct communication_buffers* buffers, struct main_data* d
  * Imprime o id da operação e incrementa o contador de operações op_counter.
  */
 void create_request(int* op_counter, struct communication_buffers* buffers, struct main_data* data) {
+
 }
 
 /* Função que lê um id de operação do utilizador e verifica se a mesma
