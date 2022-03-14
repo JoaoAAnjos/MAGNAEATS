@@ -1,8 +1,24 @@
 #include "main.h"
 
 #include <stdio.h>
+#include <string.h>
 
 #include "process.h"
+
+#define REQUEST "request"
+#define STATUS "status"
+#define STOP "stop"
+#define HELP "help"
+#define COMMANDS \
+    "The following commands are possible:\n\n\
+ %s - creates a new operation\n\
+    usage: request [client_id] [restaurant_id] [the_dish]\n\
+ %s - displays the status of an operation\n\
+    usage: status [operation_number]\n\
+ %s - stops the execution of this program and all its child processes\n\
+ %s - prints this message\n"
+
+#define COMMAND_MAX_SIZE 50
 
 /* Função que lê os argumentos da aplicação, nomeadamente o número
  * máximo de operações, o tamanho dos buffers de memória partilhada
@@ -78,6 +94,27 @@ void launch_processes(struct communication_buffers* buffers, struct main_data* d
  * help - imprime informação sobre os comandos disponiveis
  */
 void user_interaction(struct communication_buffers* buffers, struct main_data* data) {
+    char command[COMMAND_MAX_SIZE], *ptr;
+    fgets(command, COMMAND_MAX_SIZE, stdin);
+
+    for (int i = 0; i < COMMAND_MAX_SIZE; i++) {
+        if (command[i] == ' ') {
+            command[i] == '\0';
+        }
+    }
+
+    if (strcmp(command, REQUEST) == 0) {
+        // TODO: Do this
+    }
+    if (strcmp(command, STATUS) == 0) {
+        // TODO: Do that
+    }
+    if (strcmp(command, STOP) == 0) {
+        // TODO: Do it
+    }
+    if (strcmp(command, HELP) == 0) {
+        // TODO: JUST FUCKING DO IT
+    }
 }
 
 /* Se o limite de operações ainda não tiver sido atingido, cria uma nova
@@ -173,6 +210,7 @@ int main(int argc, char* argv[]) {
     create_dynamic_memory_buffers(data);
     create_shared_memory_buffers(data, buffers);
     launch_processes(buffers, data);
+    printf(COMMANDS, REQUEST, STATUS, STOP, HELP);
     user_interaction(buffers, data);
 
     // release memory before terminating
