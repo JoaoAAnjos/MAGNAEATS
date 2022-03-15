@@ -94,7 +94,7 @@ void launch_processes(struct communication_buffers* buffers, struct main_data* d
  * help - imprime informação sobre os comandos disponiveis
  */
 void user_interaction(struct communication_buffers* buffers, struct main_data* data) {
-    char command[COMMAND_MAX_SIZE], *ptr;
+    char command[COMMAND_MAX_SIZE];
     fgets(command, COMMAND_MAX_SIZE, stdin);
 
     for (int i = 0; i < COMMAND_MAX_SIZE; i++) {
@@ -104,16 +104,20 @@ void user_interaction(struct communication_buffers* buffers, struct main_data* d
     }
 
     if (strcmp(command, REQUEST) == 0) {
+        char* client_id = command + strlen(command) + 1;
+        char* restaurant_id = client_id + strlen(client_id) + 1;
+        char* the_dish = restaurant_id + strlen(restaurant_id) + 1;
         // TODO: Do this
     }
     if (strcmp(command, STATUS) == 0) {
+        char* operation = command + strlen(command) + 1;
         // TODO: Do that
     }
     if (strcmp(command, STOP) == 0) {
-        // TODO: Do it
+        stop_execution(data, buffers);
     }
     if (strcmp(command, HELP) == 0) {
-        // TODO: JUST FUCKING DO IT
+        printf(COMMANDS, REQUEST, STATUS, STOP, HELP);
     }
 }
 
@@ -125,7 +129,7 @@ void user_interaction(struct communication_buffers* buffers, struct main_data* d
 void create_request(int* op_counter, struct communication_buffers* buffers, struct main_data* data) {
     struct operation* op = malloc(sizeof(struct operation));
     op->id = *op_counter;
-    // dados passados em argumento ?
+    // TODO: dados passados em argumento ?
     write_main_rest_buffer(buffers->main_rest, data->buffers_size, op);
     printf("%d", op->id);
     *op_counter++;
@@ -138,7 +142,7 @@ void create_request(int* op_counter, struct communication_buffers* buffers, stru
  * e os ids do restaurante, motorista, e cliente que a receberam e processaram.
  */
 void read_status(struct main_data* data) {
-    // id da operação ???
+    // TODO: id da operação ???
 }
 
 /* Função que termina a execução do programa MAGNAEATS. Deve começar por
@@ -160,6 +164,15 @@ void stop_execution(struct main_data* data, struct communication_buffers* buffer
  * wait_process do process.h.
  */
 void wait_processes(struct main_data* data) {
+    for (int i = 0; i < data->n_restaurants; i++) {
+        wait_process(*(data->restaurant_pids + i));
+    }
+    for (int j = 0; j < data->n_drivers; j++) {
+        wait_process(*(data->driver_pids + j));
+    }
+    for (int k = 0; k < data->n_clients; k++) {
+        wait_process(*(data->client_pids + k));
+    }
 }
 
 /* Função que imprime as estatisticas finais do MAGNAEATS, nomeadamente quantas
