@@ -10,11 +10,12 @@
 
 #include "./memory-private.h"
 
-#define S_OP sizeof(struct operation*)
-
 void* create_shared_memory(char* name, int size) {
     // open as Read and Write (O_RDWR) for user (S_IRUSR | S_IWUSR)
-    int fd = shm_open(append_uid(name), O_RDWR, S_IRUSR | S_IWUSR);
+    char u_name[NAME_MAX_SIZE];
+    append_uid(name, u_name);
+
+    int fd = shm_open(u_name, O_RDWR, S_IRUSR | S_IWUSR);
     if (fd == -1) {
         printf("Error in shm_open");
         exit(-1);
@@ -52,7 +53,9 @@ void destroy_shared_memory(char* name, void* ptr, int size) {
         printf("Error in munmap");
         exit(-1);
     }
-    if (shm_unlink(append_uid(name)) == -1) {
+    char u_name[NAME_MAX_SIZE];
+    append_uid(name, u_name);
+    if (shm_unlink(u_name) == -1) {
         printf("Error in shm_unlink");
         exit(-1);
     }
