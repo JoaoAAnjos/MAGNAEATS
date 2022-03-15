@@ -9,13 +9,11 @@ int c_next_id(int id, int size) {
     return next ? next : 1;
 }
 
-char* append_uid(char* name) {
-    char newName[50];
-    if (snprintf(newName, 50, "%s-%i", name, getuid()) < 0) {
-        printf("Error in shm_open");
+void append_uid(char* name, char* dest) {
+    if (snprintf(dest, NAME_MAX_SIZE, "%s-%i", name, getuid()) < 0) {
+        printf("Error in append_uid");
         exit(-1);
     }
-    return newName;
 }
 
 void copy_operation(struct operation* dest, struct operation* src) {
