@@ -13,10 +13,14 @@ OUTNAME = MAGNAEATS
 
 ## Define objects needed for compilation
 
-REQUIREDOBJ = client.o driver.o main.o memory.o process.o restaurant.o
+REQUIREDOBJ = client.o driver.o main.o memory.o memory-private.o process.o restaurant.o
 
 ## Create flags var
+<<<<<<< HEAD
 FLAGS = -fdiagnostics-color=always
+=======
+FLAGS = -lrt -fdiagnostics-color=always
+>>>>>>> 5a5ddcd6544158e97b965dc5e3b87c488f6e87a3
 
 ## Main target
 
@@ -32,7 +36,11 @@ debug: all
 
 ## compiles the obj files to an executable
 compile: $(REQUIREDOBJ)
+<<<<<<< HEAD
 	$(CC) $(FLAGS) $(addprefix $(OBJDIR)/,$^) -o $(OUTNAME)
+=======
+	$(CC) $(FLAGS) $(addprefix $(OBJDIR)/,$^) -o $(BINDIR)/$(OUTNAME)
+>>>>>>> 5a5ddcd6544158e97b965dc5e3b87c488f6e87a3
 
 ## clean folders
 clean:

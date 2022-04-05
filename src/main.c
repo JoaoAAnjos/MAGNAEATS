@@ -1,8 +1,25 @@
 #include "main.h"
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "process.h"
+
+#define REQUEST "request"
+#define STATUS "status"
+#define STOP "stop"
+#define HELP "help"
+#define COMMANDS \
+    "The following commands are possible:\n\n\
+ %s - creates a new operation\n\
+    usage: request [client_id] [restaurant_id] [the_dish]\n\
+ %s - displays the status of an operation\n\
+    usage: status [operation_number]\n\
+ %s - stops the execution of this program and all its child processes\n\
+ %s - prints this message\n"
+
+#define COMMAND_MAX_SIZE 50
 
 /* Função que lê os argumentos da aplicação, nomeadamente o número
  * máximo de operações, o tamanho dos buffers de memória partilhada
@@ -78,6 +95,31 @@ void launch_processes(struct communication_buffers* buffers, struct main_data* d
  * help - imprime informação sobre os comandos disponiveis
  */
 void user_interaction(struct communication_buffers* buffers, struct main_data* data) {
+    char command[COMMAND_MAX_SIZE];
+    fgets(command, COMMAND_MAX_SIZE, stdin);
+
+    for (int i = 0; i < COMMAND_MAX_SIZE; i++) {
+        if (command[i] == ' ') {
+            command[i] == '\0';
+        }
+    }
+
+    if (strcmp(command, REQUEST) == 0) {
+        char* client_id = command + strlen(command) + 1;
+        char* restaurant_id = client_id + strlen(client_id) + 1;
+        char* the_dish = restaurant_id + strlen(restaurant_id) + 1;
+        // TODO: Do this
+    }
+    if (strcmp(command, STATUS) == 0) {
+        char* operation = command + strlen(command) + 1;
+        // TODO: Do that
+    }
+    if (strcmp(command, STOP) == 0) {
+        stop_execution(data, buffers);
+    }
+    if (strcmp(command, HELP) == 0) {
+        printf(COMMANDS, REQUEST, STATUS, STOP, HELP);
+    }
 }
 
 /* Se o limite de operações ainda não tiver sido atingido, cria uma nova
@@ -88,7 +130,7 @@ void user_interaction(struct communication_buffers* buffers, struct main_data* d
 void create_request(int* op_counter, struct communication_buffers* buffers, struct main_data* data) {
     struct operation* op = malloc(sizeof(struct operation));
     op->id = *op_counter;
-    // dados passados em argumento ?
+    // TODO: dados passados em argumento ?
     write_main_rest_buffer(buffers->main_rest, data->buffers_size, op);
     printf("%d", op->id);
     *op_counter++;
@@ -101,7 +143,7 @@ void create_request(int* op_counter, struct communication_buffers* buffers, stru
  * e os ids do restaurante, motorista, e cliente que a receberam e processaram.
  */
 void read_status(struct main_data* data) {
-    // id da operação ???
+    // TODO: id da operação ???
 }
 
 /* Função que termina a execução do programa MAGNAEATS. Deve começar por
@@ -123,6 +165,15 @@ void stop_execution(struct main_data* data, struct communication_buffers* buffer
  * wait_process do process.h.
  */
 void wait_processes(struct main_data* data) {
+    for (int i = 0; i < data->n_restaurants; i++) {
+        wait_process(*(data->restaurant_pids + i));
+    }
+    for (int j = 0; j < data->n_drivers; j++) {
+        wait_process(*(data->driver_pids + j));
+    }
+    for (int k = 0; k < data->n_clients; k++) {
+        wait_process(*(data->client_pids + k));
+    }
 }
 
 /* Função que imprime as estatisticas finais do MAGNAEATS, nomeadamente quantas
@@ -173,6 +224,7 @@ int main(int argc, char* argv[]) {
     create_dynamic_memory_buffers(data);
     create_shared_memory_buffers(data, buffers);
     launch_processes(buffers, data);
+    printf(COMMANDS, REQUEST, STATUS, STOP, HELP);
     user_interaction(buffers, data);
 
     // release memory before terminating
