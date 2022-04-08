@@ -1,4 +1,5 @@
 #include "driver.h"
+#include <string.h>
 #include <stdio.h>
 
 

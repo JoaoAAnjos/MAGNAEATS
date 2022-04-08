@@ -1,5 +1,5 @@
 #include "restaurant.h"
-
+#include <string.h>
 #include <stdio.h>
 
 /* Função principal de um Restaurante. Deve executar um ciclo infinito onde em

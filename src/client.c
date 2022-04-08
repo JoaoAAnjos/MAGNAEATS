@@ -1,5 +1,5 @@
 #include "client.h"
-
+#include <string.h>
 #include <stdio.h>
 
 /* Função principal de um Cliente. Deve executar um ciclo infinito onde em 
