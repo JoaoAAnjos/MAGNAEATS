@@ -9,7 +9,13 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/bin/MAGNAEATS",
-            "args": [],
+            "args": [
+                "10",
+                "3",
+                "1",
+                "1",
+                "1"
+            ],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",
             "environment": [],
