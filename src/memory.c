@@ -124,3 +124,5 @@ void read_driver_client_buffer(struct rnd_access_buffer* buffer, int client_id, 
     }
     op->id = -1;
 }
+
+// FIXME: copy_operation to memcpy

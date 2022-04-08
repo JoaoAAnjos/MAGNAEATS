@@ -19,7 +19,7 @@
  %s - stops the execution of this program and all its child processes\n\
  %s - prints this message\n"
 
-#define COMMAND_MAX_SIZE 50
+#define COMMAND_MAX_SIZE 8
 
 /* Função que lê os argumentos da aplicação, nomeadamente o número
  * máximo de operações, o tamanho dos buffers de memória partilhada
@@ -28,11 +28,14 @@
  * estrutura main_data.
  */
 void main_args(int argc, char* argv[], struct main_data* data) {
+    // TODO: check if enough args
     data->max_ops = atoi(argv[1]);
     data->buffers_size = atoi(argv[2]);
     data->n_restaurants = atoi(argv[3]);
     data->n_drivers = atoi(argv[4]);
     data->n_clients = atoi(argv[5]);
+    // hardcoded, argc doesnt make much sense ? check main
+    // DAFUCK??
 }
 
 /* Função que reserva a memória dinâmica necessária para a execução
@@ -94,27 +97,19 @@ void launch_processes(struct communication_buffers* buffers, struct main_data* d
  * help - imprime informação sobre os comandos disponiveis
  */
 void user_interaction(struct communication_buffers* buffers, struct main_data* data) {
-    char command[COMMAND_MAX_SIZE];
-    int* op_counter = malloc(sizeof(int));
-    *op_counter = 0;
+    char command[COMMAND_MAX_SIZE] = {0};
+    int op_counter = 0;
 
-    while(1) {
-        fgets(command, COMMAND_MAX_SIZE, stdin);
-
-        for (int i = 0; i < COMMAND_MAX_SIZE; i++) {
-            if (command[i] == ' ') {
-            command[i] == '\0';
-            }
-        }
+    while (1) {
+        scanf("%7s", command);
 
         if (strcmp(command, REQUEST) == 0) {
-            create_request(op_counter, buffers, data);
+            create_request(&op_counter, buffers, data);
         }
         if (strcmp(command, STATUS) == 0) {
             read_status(data);
         }
         if (strcmp(command, STOP) == 0) {
-            free(op_counter);
             stop_execution(data, buffers);
             return;
         }
@@ -122,21 +117,19 @@ void user_interaction(struct communication_buffers* buffers, struct main_data* d
             printf(COMMANDS, REQUEST, STATUS, STOP, HELP);
         }
     }
-    
 }
 
 /* Se o limite de operações ainda não tiver sido atingido, cria uma nova
-* operação identificada pelo valor atual de op_counter e com os dados introduzidos
-* pelo utilizador na linha de comandos, escrevendo a mesma no buffer de memória
-* partilhada entre main e restaurantes. Imprime o id da operação e incrementa o
-* contador de operações op_counter.
-*/
+ * operação identificada pelo valor atual de op_counter e com os dados passados em
+ * argumento, escrevendo a mesma no buffer de memória partilhada entre main e restaurantes.
+ * Imprime o id da operação e incrementa o contador de operações op_counter.
+ */
 void create_request(int* op_counter, struct communication_buffers* buffers, struct main_data* data) {
-    if(data->max_ops != *op_counter) {
-        struct operation* op = malloc(sizeof(struct operation));
-        op->id = *op_counter;
-        write_main_rest_buffer(buffers->main_rest, data->buffers_size, op);
-        printf("%d", op->id);
+    if (data->max_ops != *op_counter) {
+        struct operation op;
+        op.id = *op_counter;
+        write_main_rest_buffer(buffers->main_rest, data->buffers_size, &op);
+        printf("%d", op.id);
         *op_counter++;
     } else {
         printf("Operation limit reached");
