@@ -65,7 +65,7 @@ void create_shared_memory_buffers(struct main_data* data, struct communication_b
     buffers->driv_cli->ptrs = create_shared_memory(STR_SHM_DRIVER_CLIENT_PTR, sizeof(int));
     buffers->driv_cli->buffer = create_shared_memory(STR_SHM_DRIVER_CLIENT_BUFFER, data->buffers_size);
     // result and terminate
-    data->results = create_shared_memory(STR_SHM_RESULTS, sizeof(struct operation));
+    data->results = create_shared_memory(STR_SHM_RESULTS, sizeof(struct operation)*data->max_ops);
     // TODO Char pointer
     data->terminate = create_shared_memory(STR_SHM_TERMINATE, sizeof(int));
 }
@@ -95,8 +95,7 @@ void launch_processes(struct communication_buffers* buffers, struct main_data* d
  */
 void user_interaction(struct communication_buffers* buffers, struct main_data* data) {
     char command[COMMAND_MAX_SIZE];
-    int* op_counter = malloc(sizeof(int));
-    *op_counter = 0;
+    int op_counter = 0;
 
     while(1) {
         fgets(command, COMMAND_MAX_SIZE, stdin);
@@ -114,7 +113,6 @@ void user_interaction(struct communication_buffers* buffers, struct main_data* d
             read_status(data);
         }
         if (strcmp(command, STOP) == 0) {
-            free(op_counter);
             stop_execution(data, buffers);
             return;
         }
