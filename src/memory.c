@@ -11,11 +11,11 @@
 #include "./memory-private.h"
 
 void* create_shared_memory(char* name, int size) {
-    // open as Read and Write (O_RDWR) for user (S_IRUSR | S_IWUSR)
-    char u_name[NAME_MAX_SIZE];
+    // open/create as Read and Write (O_CREAT | O_RDWR) for user (S_IRUSR | S_IWUSR)
+    char u_name[NAME_MAX_SIZE] = {0};
     append_uid(name, u_name);
 
-    int fd = shm_open(u_name, O_RDWR, S_IRUSR | S_IWUSR);
+    int fd = shm_open(u_name, O_CREAT | O_RDWR, S_IRUSR | S_IWUSR);
     if (fd == -1) {
         printf("Error in shm_open");
         exit(-1);
@@ -53,7 +53,7 @@ void destroy_shared_memory(char* name, void* ptr, int size) {
         printf("Error in munmap");
         exit(-1);
     }
-    char u_name[NAME_MAX_SIZE];
+    char u_name[NAME_MAX_SIZE] = {0};
     append_uid(name, u_name);
     if (shm_unlink(u_name) == -1) {
         printf("Error in shm_unlink");
@@ -124,5 +124,3 @@ void read_driver_client_buffer(struct rnd_access_buffer* buffer, int client_id, 
     }
     op->id = -1;
 }
-
-// FIXME: copy_operation to memcpy
