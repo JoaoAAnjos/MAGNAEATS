@@ -30,7 +30,7 @@ int execute_driver(int driver_id, struct communication_buffers* buffers, struct 
  * Em caso afirmativo, retorna imediatamente da função.
  */
 void driver_receive_operation(struct operation* op, struct communication_buffers* buffers, struct main_data* data) {
-    if (!data->terminate) {
+    if (!*data->terminate) {
         read_rest_driver_buffer(buffers->rest_driv, data->buffers_size, op);
     } else {
         return;
