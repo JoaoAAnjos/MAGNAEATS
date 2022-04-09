@@ -48,7 +48,6 @@ void restaurant_process_operation(struct operation* op, int rest_id, struct main
     op->receiving_rest = rest_id;
     op->status = 'R';
     *(counter)++;
-    *(data->restaurant_stats)++;
     memcpy(data->results+op->id, op, sizeof(struct operation));
 }
 

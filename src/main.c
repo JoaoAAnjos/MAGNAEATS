@@ -16,7 +16,8 @@
     usage: request [client_id] [restaurant_id] [the_dish]\n\
  %s - displays the status of an operation\n\
     usage: status [operation_number]\n\
- %s - stops the execution of this program and all its child processes\n\
+ %s - stops the execution of this program, all its child processes\
+    and prints statistics\n\
  %s - prints this message\n"
 
 #define COMMAND_MAX_SIZE 8
@@ -35,7 +36,6 @@ void main_args(int argc, char* argv[], struct main_data* data) {
     data->n_drivers = atoi(argv[4]);
     data->n_clients = atoi(argv[5]);
     // hardcoded, argc doesnt make much sense ? check main
-    // DAFUCK??
 }
 
 /* Função que reserva a memória dinâmica necessária para a execução
@@ -110,6 +110,7 @@ void user_interaction(struct communication_buffers* buffers, struct main_data* d
             read_status(data);
         }
         if (strcmp(command, STOP) == 0) {
+            write_statistics(data);
             stop_execution(data, buffers);
             return;
         }
@@ -127,7 +128,18 @@ void user_interaction(struct communication_buffers* buffers, struct main_data* d
 void create_request(int* op_counter, struct communication_buffers* buffers, struct main_data* data) {
     if (data->max_ops != *op_counter) {
         struct operation op;
+        int cli;
+        int rest;
+        char dish[30] = {0};
+        scanf("%[^\n]d",cli);
+        scanf("%[^\n]d",rest);
+        scanf("%[^\n]s",dish);
         op.id = *op_counter;
+        op.status = 'I';
+        op.requesting_client = cli;
+        op.requested_rest = rest;
+        op.requested_dish = dish;
+        memcpy(data->results+op.id, &op, sizeof(struct operation));
         write_main_rest_buffer(buffers->main_rest, data->buffers_size, &op);
         printf("%d", op.id);
         *op_counter++;
@@ -143,7 +155,13 @@ void create_request(int* op_counter, struct communication_buffers* buffers, stru
  * e os ids do restaurante, motorista, e cliente que a receberam e processaram.
  */
 void read_status(struct main_data* data) {
-    // TODO: id da operação ???
+    int id;
+    scanf("%[^\n]d",id);
+    if((data->results+id) != NULL) {
+        printf("Status:%c\n", (data->results+id)->status);
+    } else {
+        printf("This operation does not exist");
+    }
 }
 
 /* Função que termina a execução do programa MAGNAEATS. Deve começar por
@@ -166,13 +184,13 @@ void stop_execution(struct main_data* data, struct communication_buffers* buffer
  */
 void wait_processes(struct main_data* data) {
     for (int i = 0; i < data->n_restaurants; i++) {
-        wait_process(*(data->restaurant_pids + i));
+        *(data->restaurant_stats + i) = wait_process(*(data->restaurant_pids + i));
     }
     for (int j = 0; j < data->n_drivers; j++) {
-        wait_process(*(data->driver_pids + j));
+        *(data->driver_stats + j) = wait_process(*(data->driver_pids + j));
     }
     for (int k = 0; k < data->n_clients; k++) {
-        wait_process(*(data->client_pids + k));
+        *(data->client_stats + k) = wait_process(*(data->client_pids + k));
     }
 }
 
@@ -180,9 +198,18 @@ void wait_processes(struct main_data* data) {
  * operações foram processadas por cada restaurante, motorista e cliente.
  */
 void write_statistics(struct main_data* data) {
-    printf("Restaurant stats: %d \n", *(data->restaurant_stats));
-    printf("Driver stats: %d \n", *(data->driver_stats));
-    printf("Client stats: %d \n", *(data->client_stats));
+    printf("Restaurant stats:\n");
+    for (int i = 0; i < data->n_restaurants; i++) {
+        printf("%d : %d\n", *(data->restaurant_pids+i), *(data->restaurant_stats+i));
+    }
+    printf("Driver stats:\n");
+    for (int j = 0; j < data->n_drivers; j++) {
+        printf("%d : %d\n", *(data->driver_pids+j), *(data->driver_stats+j));
+    }
+    printf("Client stats:\n");
+    for (int k = 0; k < data->n_clients; k++) {
+        printf("%d : %d\n", *(data->client_pids+k), *(data->client_stats+k));
+    };
 }
 
 /* Função que liberta todos os buffers de memória dinâmica e partilhada previamente

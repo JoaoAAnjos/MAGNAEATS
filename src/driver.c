@@ -51,7 +51,6 @@ void driver_process_operation(struct operation* op, int driver_id, struct main_d
     op->receiving_driver = driver_id;
     op->status = 'D';
     *(counter)++;
-    *(data->driver_stats)++;
     memcpy(data->results+op->id, op, sizeof(struct operation));
 }
 
