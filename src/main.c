@@ -68,7 +68,7 @@ void create_shared_memory_buffers(struct main_data* data, struct communication_b
     buffers->driv_cli->ptrs = create_shared_memory(STR_SHM_DRIVER_CLIENT_PTR, sizeof(int));
     buffers->driv_cli->buffer = create_shared_memory(STR_SHM_DRIVER_CLIENT_BUFFER, data->buffers_size);
     // result and terminate
-    data->results = create_shared_memory(STR_SHM_RESULTS, sizeof(struct operation)*data->max_ops);
+    data->results = create_shared_memory(STR_SHM_RESULTS, sizeof(struct operation) * data->max_ops);
     // TODO Char pointer
     data->terminate = create_shared_memory(STR_SHM_TERMINATE, sizeof(int));
 }
@@ -131,15 +131,15 @@ void create_request(int* op_counter, struct communication_buffers* buffers, stru
         int cli;
         int rest;
         char dish[30] = {0};
-        scanf("%[^\n]d",cli);
-        scanf("%[^\n]d",rest);
-        scanf("%[^\n]s",dish);
+        scanf("%[^\n]d", cli);
+        scanf("%[^\n]d", rest);
+        scanf("%[^\n]s", dish);
         op.id = *op_counter;
         op.status = 'I';
         op.requesting_client = cli;
         op.requested_rest = rest;
         op.requested_dish = dish;
-        memcpy(data->results+op.id, &op, sizeof(struct operation));
+        memcpy(data->results + op.id, &op, sizeof(struct operation));
         write_main_rest_buffer(buffers->main_rest, data->buffers_size, &op);
         printf("%d", op.id);
         *op_counter++;
@@ -156,9 +156,9 @@ void create_request(int* op_counter, struct communication_buffers* buffers, stru
  */
 void read_status(struct main_data* data) {
     int id;
-    scanf("%[^\n]d",id);
-    if((data->results+id) != NULL) {
-        printf("Status:%c\n", (data->results+id)->status);
+    scanf("%[^\n]d", id);
+    if ((data->results + id) != NULL) {
+        printf("Status:%c\n", (data->results + id)->status);
     } else {
         printf("This operation does not exist");
     }
@@ -200,15 +200,15 @@ void wait_processes(struct main_data* data) {
 void write_statistics(struct main_data* data) {
     printf("Restaurant stats:\n");
     for (int i = 0; i < data->n_restaurants; i++) {
-        printf("%d : %d\n", *(data->restaurant_pids+i), *(data->restaurant_stats+i));
+        printf("%d : %d\n", *(data->restaurant_pids + i), *(data->restaurant_stats + i));
     }
     printf("Driver stats:\n");
     for (int j = 0; j < data->n_drivers; j++) {
-        printf("%d : %d\n", *(data->driver_pids+j), *(data->driver_stats+j));
+        printf("%d : %d\n", *(data->driver_pids + j), *(data->driver_stats + j));
     }
     printf("Client stats:\n");
     for (int k = 0; k < data->n_clients; k++) {
-        printf("%d : %d\n", *(data->client_pids+k), *(data->client_stats+k));
+        printf("%d : %d\n", *(data->client_pids + k), *(data->client_stats + k));
     };
 }
 
