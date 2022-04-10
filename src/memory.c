@@ -76,12 +76,7 @@ void write_main_rest_buffer(struct rnd_access_buffer* buffer, int buffer_size, s
 }
 
 void write_rest_driver_buffer(struct circular_buffer* buffer, int buffer_size, struct operation* op) {
-    int next = c_next_id(buffer->ptrs->in, buffer_size);
-
-    if (next != buffer->ptrs->out) {
-        buffer->ptrs->in = next;
-        copy_operation(&buffer->buffer[next], op);
-    }
+    int next = c_next_id(buffer->ptrs->in, buffer)
 }
 
 void write_driver_client_buffer(struct rnd_access_buffer* buffer, int buffer_size, struct operation* op) {

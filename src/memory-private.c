@@ -5,8 +5,7 @@
 #include <unistd.h>
 
 int c_next_id(int id, int size) {
-    int next = (id + 1) % size;
-    return next ? next : 1;
+    return (id + 1) % size;
 }
 
 void append_uid(char* name, char* dest) {

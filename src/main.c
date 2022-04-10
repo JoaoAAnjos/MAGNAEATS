@@ -64,10 +64,10 @@ void create_shared_memory_buffers(struct main_data* data, struct communication_b
     buffers->main_rest->buffer = create_shared_memory(STR_SHM_MAIN_REST_BUFFER, sizeof(struct operation) * data->buffers_size);
     // rest_driv buffer
     buffers->rest_driv->ptrs = create_shared_memory(STR_SHM_REST_DRIVER_PTR, sizeof(struct pointers));
-    buffers->rest_driv->buffer = create_shared_memory(STR_SHM_REST_DRIVER_BUFFER, data->buffers_size);
+    buffers->rest_driv->buffer = create_shared_memory(STR_SHM_REST_DRIVER_BUFFER, sizeof(struct operation) * data->buffers_size);
     // driv_cli buffer
-    buffers->driv_cli->ptrs = create_shared_memory(STR_SHM_DRIVER_CLIENT_PTR, sizeof(int));
-    buffers->driv_cli->buffer = create_shared_memory(STR_SHM_DRIVER_CLIENT_BUFFER, data->buffers_size);
+    buffers->driv_cli->ptrs = create_shared_memory(STR_SHM_DRIVER_CLIENT_PTR, sizeof(int) * data->buffers_size);
+    buffers->driv_cli->buffer = create_shared_memory(STR_SHM_DRIVER_CLIENT_BUFFER, sizeof(struct operation) * data->buffers_size);
     // result and terminate
     data->results = create_shared_memory(STR_SHM_RESULTS, sizeof(struct operation) * data->max_ops);
     data->terminate = create_shared_memory(STR_SHM_TERMINATE, sizeof(int));
@@ -160,6 +160,12 @@ void read_status(struct main_data* data) {
     scanf("%d", &id);
     if ((data->results + id) != NULL) {
         printf("Status:%c\n", (data->results + id)->status);
+        printf("Requested restaurant:%d\n", (data->results + id)->requested_rest);
+        printf("Requesting client:%d\n", (data->results + id)->requesting_client);
+        printf("Requested dish:%s\n", (data->results + id)->requested_dish);
+        printf("Receiving restaurant:%d\n", (data->results + id)->receiving_rest);
+        printf("Receiving driver:%d\n", (data->results + id)->receiving_driver);
+        printf("Receiving client:%d\n", (data->results + id)->receiving_client);
     } else {
         printf("This operation does not exist");
     }
@@ -226,14 +232,14 @@ void destroy_memory_buffers(struct main_data* data, struct communication_buffers
     destroy_dynamic_memory(data->driver_stats);
     destroy_dynamic_memory(data->client_stats);
     // main_rest buffer
-    destroy_shared_memory(STR_SHM_MAIN_REST_PTR, buffers->main_rest->ptrs, sizeof(int));
-    destroy_shared_memory(STR_SHM_MAIN_REST_BUFFER, buffers->main_rest->buffer, data->buffers_size);
+    destroy_shared_memory(STR_SHM_MAIN_REST_PTR, buffers->main_rest->ptrs, sizeof(int) * data->buffers_size);
+    destroy_shared_memory(STR_SHM_MAIN_REST_BUFFER, buffers->main_rest->buffer, sizeof(struct operation) * data->buffers_size);
     // rest_driv buffer
     destroy_shared_memory(STR_SHM_REST_DRIVER_PTR, buffers->rest_driv->ptrs, sizeof(struct pointers));
-    destroy_shared_memory(STR_SHM_REST_DRIVER_BUFFER, buffers->rest_driv->buffer, data->buffers_size);
+    destroy_shared_memory(STR_SHM_REST_DRIVER_BUFFER, buffers->rest_driv->buffer, sizeof(struct operation) * data->buffers_size);
     // driv_cli buffer
-    destroy_shared_memory(STR_SHM_DRIVER_CLIENT_PTR, buffers->driv_cli->ptrs, sizeof(int));
-    destroy_shared_memory(STR_SHM_DRIVER_CLIENT_BUFFER, buffers->driv_cli->buffer, data->buffers_size);
+    destroy_shared_memory(STR_SHM_DRIVER_CLIENT_PTR, buffers->driv_cli->ptrs, sizeof(int) * data->buffers_size);
+    destroy_shared_memory(STR_SHM_DRIVER_CLIENT_BUFFER, buffers->driv_cli->buffer, sizeof(struct operation) * data->buffers_size);
     // result and terminate
     destroy_shared_memory(STR_SHM_RESULTS, data->results, sizeof(struct operation));
     destroy_shared_memory(STR_SHM_TERMINATE, data->terminate, sizeof(int));
