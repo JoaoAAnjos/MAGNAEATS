@@ -18,10 +18,8 @@ int execute_restaurant(int rest_id, struct communication_buffers* buffers, struc
         op.id = -1;
         restaurant_receive_operation(&op, rest_id, buffers, data);
         if (*data->terminate) {
-            printf("Restaurante %d termina com %d!", rest_id, counter);
             return counter;
         } else if (op.id != -1) {
-            printf("Restaurante %d recebeu pedido!", rest_id);
             restaurant_process_operation(&op, rest_id, data, &counter);
             restaurant_forward_operation(&op, buffers, data);
         }
