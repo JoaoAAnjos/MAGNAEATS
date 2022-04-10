@@ -16,11 +16,11 @@ int execute_driver(int driver_id, struct communication_buffers* buffers, struct 
     int counter = 0;
     while (1) {
         struct operation op;
-        op.id = -1; //To erase
         driver_receive_operation(&op, buffers, data);
         if (*data->terminate) {
             return counter;
         } else if (op.id != -1) {
+            printf("Driver recebeu pedido!\n");
             driver_process_operation(&op, driver_id, data, &counter);
             driver_send_answer(&op, buffers, data);
         }
@@ -55,4 +55,5 @@ void driver_process_operation(struct operation* op, int driver_id, struct main_d
  */
 void driver_send_answer(struct operation* op, struct communication_buffers* buffers, struct main_data* data) {
     write_driver_client_buffer(buffers->driv_cli, data->buffers_size, op);
+    printf("Driver enviou pedido!\n");
 }

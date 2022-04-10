@@ -69,21 +69,28 @@ void write_main_rest_buffer(struct rnd_access_buffer* buffer, int buffer_size, s
     for (int i = 0; i < buffer_size; i++) {
         if (buffer->ptrs[i] == 0) {
             buffer->ptrs[i] = 1;
-            copy_operation(&buffer->buffer[i], op);
+            buffer->buffer[i] = *op;
             return;
         }
     }
 }
 
 void write_rest_driver_buffer(struct circular_buffer* buffer, int buffer_size, struct operation* op) {
-    int next = c_next_id(buffer->ptrs->in, buffer)
+    int next = c_next_id(buffer->ptrs->in, buffer_size);
+
+    if (next == buffer->ptrs->out) {
+        return;
+    }
+
+    buffer->buffer[buffer->ptrs->in] = *op;
+    buffer->ptrs->in = next;
 }
 
 void write_driver_client_buffer(struct rnd_access_buffer* buffer, int buffer_size, struct operation* op) {
     for (int i = 0; i < buffer_size; i++) {
         if (buffer->ptrs[i] == 0) {
             buffer->ptrs[i] = 1;
-            copy_operation(&buffer->buffer[i], op);
+            buffer->buffer[i] = *op;
         }
     }
 }
@@ -91,7 +98,7 @@ void write_driver_client_buffer(struct rnd_access_buffer* buffer, int buffer_siz
 void read_main_rest_buffer(struct rnd_access_buffer* buffer, int rest_id, int buffer_size, struct operation* op) {
     for (int i = 0; i < buffer_size; i++) {
         if (buffer->ptrs[i] == 1 && buffer->buffer[i].requested_rest == rest_id) {
-            copy_operation(op, &buffer->buffer[i]);
+            *op = buffer->buffer[i];
             buffer->ptrs[i] = 0;
             return;
         }
@@ -100,20 +107,18 @@ void read_main_rest_buffer(struct rnd_access_buffer* buffer, int rest_id, int bu
 }
 
 void read_rest_driver_buffer(struct circular_buffer* buffer, int buffer_size, struct operation* op) {
-    int next = c_next_id(buffer->ptrs->out, buffer_size);
-
-    if (next == c_next_id(buffer->ptrs->in, buffer_size)) {
+    if (buffer->ptrs->in == buffer->ptrs->out) {
         op->id = -1;
         return;
     }
-    copy_operation(op, &buffer->buffer[next]);
-    buffer->ptrs->out = next;
+    *op = buffer->buffer[buffer->ptrs->out];
+    buffer->ptrs->out = c_next_id(buffer->ptrs->out, buffer_size);
 }
 
 void read_driver_client_buffer(struct rnd_access_buffer* buffer, int client_id, int buffer_size, struct operation* op) {
     for (int i = 0; i < buffer_size; i++) {
         if (buffer->ptrs[i] == 1 && buffer->buffer[i].requesting_client == client_id) {
-            copy_operation(op, &buffer->buffer[i]);
+            *op = buffer->buffer[i];
             buffer->ptrs[i] = 0;
             return;
         }

@@ -6,6 +6,7 @@
 
 #include "process.h"
 // TODO: REMOVE
+#include "driver.h"
 #include "restaurant.h"
 
 #define REQUEST "request"
@@ -183,6 +184,12 @@ void stop_execution(struct main_data* data, struct communication_buffers* buffer
     wait_processes(data);
     write_statistics(data);
     destroy_memory_buffers(data, buffers);
+    // release memory before terminating
+    destroy_dynamic_memory(data);
+    destroy_dynamic_memory(buffers->main_rest);
+    destroy_dynamic_memory(buffers->rest_driv);
+    destroy_dynamic_memory(buffers->driv_cli);
+    destroy_dynamic_memory(buffers);
 }
 
 /* Função que espera que todos os processos previamente iniciados terminem,
@@ -261,11 +268,4 @@ int main(int argc, char* argv[]) {
     launch_processes(buffers, data);
     printf(COMMANDS, REQUEST, STATUS, STOP, HELP);
     user_interaction(buffers, data);
-
-    // release memory before terminating
-    destroy_dynamic_memory(data);
-    destroy_dynamic_memory(buffers->main_rest);
-    destroy_dynamic_memory(buffers->rest_driv);
-    destroy_dynamic_memory(buffers->driv_cli);
-    destroy_dynamic_memory(buffers);
 }

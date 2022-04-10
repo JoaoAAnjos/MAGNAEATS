@@ -13,8 +13,4 @@ int c_next_id(int id, int size);
  */
 void append_uid(char* name, char* dest);
 
-/* Copies operation contents to another operation
- */
-void copy_operation(struct operation* dest, struct operation* src);
-
 #endif
