@@ -16,7 +16,7 @@ int launch_restaurant(int restaurant_id, struct communication_buffers* buffers, 
         printf("Error forking in launch_restaurant");
         exit(-1);
     } else if (pid == 0) {
-        return execute_restaurant(restaurant_id, buffers, data);
+        exit(execute_restaurant(restaurant_id, buffers, data));
     }
     return pid;
 }
@@ -27,7 +27,7 @@ int launch_driver(int driver_id, struct communication_buffers* buffers, struct m
         printf("Error forking in launch_restaurant");
         exit(-1);
     } else if (pid == 0) {
-        return execute_driver(driver_id, buffers, data);
+        exit(execute_driver(driver_id, buffers, data));
     }
     return pid;
 }
@@ -38,7 +38,7 @@ int launch_client(int client_id, struct communication_buffers* buffers, struct m
         printf("Error forking in launch_restaurant");
         exit(-1);
     } else if (pid == 0) {
-        return execute_client(client_id, buffers, data);
+        exit(execute_client(client_id, buffers, data));
     }
     return pid;
 }
