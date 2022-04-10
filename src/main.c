@@ -6,6 +6,7 @@
 
 #include "process.h"
 // TODO: REMOVE
+#include "driver.h"
 #include "restaurant.h"
 
 #define REQUEST "request"
@@ -64,10 +65,10 @@ void create_shared_memory_buffers(struct main_data* data, struct communication_b
     buffers->main_rest->buffer = create_shared_memory(STR_SHM_MAIN_REST_BUFFER, sizeof(struct operation) * data->buffers_size);
     // rest_driv buffer
     buffers->rest_driv->ptrs = create_shared_memory(STR_SHM_REST_DRIVER_PTR, sizeof(struct pointers));
-    buffers->rest_driv->buffer = create_shared_memory(STR_SHM_REST_DRIVER_BUFFER, data->buffers_size);
+    buffers->rest_driv->buffer = create_shared_memory(STR_SHM_REST_DRIVER_BUFFER, sizeof(struct operation) * data->buffers_size);
     // driv_cli buffer
-    buffers->driv_cli->ptrs = create_shared_memory(STR_SHM_DRIVER_CLIENT_PTR, sizeof(int));
-    buffers->driv_cli->buffer = create_shared_memory(STR_SHM_DRIVER_CLIENT_BUFFER, data->buffers_size);
+    buffers->driv_cli->ptrs = create_shared_memory(STR_SHM_DRIVER_CLIENT_PTR, sizeof(int) * data->buffers_size);
+    buffers->driv_cli->buffer = create_shared_memory(STR_SHM_DRIVER_CLIENT_BUFFER, sizeof(struct operation) * data->buffers_size);
     // result and terminate
     data->results = create_shared_memory(STR_SHM_RESULTS, sizeof(struct operation) * data->max_ops);
     data->terminate = create_shared_memory(STR_SHM_TERMINATE, sizeof(int));
@@ -177,6 +178,12 @@ void stop_execution(struct main_data* data, struct communication_buffers* buffer
     wait_processes(data);
     write_statistics(data);
     destroy_memory_buffers(data, buffers);
+    // release memory before terminating
+    destroy_dynamic_memory(data);
+    destroy_dynamic_memory(buffers->main_rest);
+    destroy_dynamic_memory(buffers->rest_driv);
+    destroy_dynamic_memory(buffers->driv_cli);
+    destroy_dynamic_memory(buffers);
 }
 
 /* Função que espera que todos os processos previamente iniciados terminem,
@@ -255,11 +262,4 @@ int main(int argc, char* argv[]) {
     launch_processes(buffers, data);
     printf(COMMANDS, REQUEST, STATUS, STOP, HELP);
     user_interaction(buffers, data);
-
-    // release memory before terminating
-    destroy_dynamic_memory(data);
-    destroy_dynamic_memory(buffers->main_rest);
-    destroy_dynamic_memory(buffers->rest_driv);
-    destroy_dynamic_memory(buffers->driv_cli);
-    destroy_dynamic_memory(buffers);
 }
