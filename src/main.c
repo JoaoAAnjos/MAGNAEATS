@@ -60,8 +60,8 @@ void create_dynamic_memory_buffers(struct main_data* data) {
  */
 void create_shared_memory_buffers(struct main_data* data, struct communication_buffers* buffers) {
     // main_rest buffer
-    buffers->main_rest->ptrs = create_shared_memory(STR_SHM_MAIN_REST_PTR, sizeof(int));
-    buffers->main_rest->buffer = create_shared_memory(STR_SHM_MAIN_REST_BUFFER, data->buffers_size);
+    buffers->main_rest->ptrs = create_shared_memory(STR_SHM_MAIN_REST_PTR, sizeof(int) * data->buffers_size);
+    buffers->main_rest->buffer = create_shared_memory(STR_SHM_MAIN_REST_BUFFER, sizeof(struct operation) * data->buffers_size);
     // rest_driv buffer
     buffers->rest_driv->ptrs = create_shared_memory(STR_SHM_REST_DRIVER_PTR, sizeof(struct pointers));
     buffers->rest_driv->buffer = create_shared_memory(STR_SHM_REST_DRIVER_BUFFER, data->buffers_size);

@@ -70,6 +70,7 @@ void write_main_rest_buffer(struct rnd_access_buffer* buffer, int buffer_size, s
         if (buffer->ptrs[i] == 0) {
             buffer->ptrs[i] = 1;
             copy_operation(&buffer->buffer[i], op);
+            return;
         }
     }
 }

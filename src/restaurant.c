@@ -15,7 +15,7 @@ int execute_restaurant(int rest_id, struct communication_buffers* buffers, struc
     int counter = 0;
     while (1) {
         struct operation op;
-        op.id = -1; //To erase
+        op.id = -1;  // To erase
         restaurant_receive_operation(&op, rest_id, buffers, data);
         if (*data->terminate) {
             return counter;
