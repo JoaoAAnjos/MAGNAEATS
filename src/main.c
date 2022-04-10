@@ -37,7 +37,6 @@ void main_args(int argc, char* argv[], struct main_data* data) {
     data->n_restaurants = atoi(argv[3]);
     data->n_drivers = atoi(argv[4]);
     data->n_clients = atoi(argv[5]);
-    // hardcoded, argc doesnt make much sense ? check main
 }
 
 /* Função que reserva a memória dinâmica necessária para a execução
@@ -71,7 +70,6 @@ void create_shared_memory_buffers(struct main_data* data, struct communication_b
     buffers->driv_cli->buffer = create_shared_memory(STR_SHM_DRIVER_CLIENT_BUFFER, data->buffers_size);
     // result and terminate
     data->results = create_shared_memory(STR_SHM_RESULTS, sizeof(struct operation) * data->max_ops);
-    // TODO Char pointer
     data->terminate = create_shared_memory(STR_SHM_TERMINATE, sizeof(int));
     *(data->terminate) = 0;
 }
@@ -113,6 +111,7 @@ void user_interaction(struct communication_buffers* buffers, struct main_data* d
             read_status(data);
         }
         if (strcmp(command, STOP) == 0) {
+            write_statistics(data);
             stop_execution(data, buffers);
             return;
         }
