@@ -1,26 +1,26 @@
 #include "client.h"
-#include <string.h>
-#include <stdio.h>
 
-/* Função principal de um Cliente. Deve executar um ciclo infinito onde em 
-* cada iteração lê uma operação dos motoristas e se e data->terminate ainda 
-* for igual a 0, processa-a. Operações com id igual a -1 são ignoradas
-* (op inválida) e se data->terminate for igual a 1 é porque foi dada ordem
-* de terminação do programa, portanto deve-se fazer return do número de 
-* operações processadas. Para efetuar estes passos, pode usar os outros
-* métodos auxiliares definidos em client.h.
-*/
+#include <stdio.h>
+#include <string.h>
+
+/* Função principal de um Cliente. Deve executar um ciclo infinito onde em
+ * cada iteração lê uma operação dos motoristas e se e data->terminate ainda
+ * for igual a 0, processa-a. Operações com id igual a -1 são ignoradas
+ * (op inválida) e se data->terminate for igual a 1 é porque foi dada ordem
+ * de terminação do programa, portanto deve-se fazer return do número de
+ * operações processadas. Para efetuar estes passos, pode usar os outros
+ * métodos auxiliares definidos em client.h.
+ */
 int execute_client(int client_id, struct communication_buffers* buffers, struct main_data* data) {
     int op_proc = 0;
     while (1) {
-        struct operation* op = NULL;
-        client_get_operation(op, client_id, buffers, data);
-        if (op != NULL && !*data->terminate) {
-            if (op->id != -1) {
-                client_process_operation(op, client_id, data, &op_proc);
-            }
-        } else if (*data->terminate) {
+        struct operation op;
+        op.id = -1;
+        client_get_operation(&op, client_id, buffers, data);
+        if (*data->terminate) {
             return op_proc;
+        } else if (op.id != -1) {
+            client_process_operation(&op, client_id, data, &op_proc);
         }
     }
 }
@@ -44,5 +44,5 @@ void client_process_operation(struct operation* op, int client_id, struct main_d
     op->receiving_client = client_id;
     op->status = 'C';
     *(counter)++;
-    memcpy(data->results+op->id, op, sizeof(struct operation));
+    memcpy(data->results + op->id, op, sizeof(struct operation));
 }

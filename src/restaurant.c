@@ -1,6 +1,7 @@
 #include "restaurant.h"
-#include <string.h>
+
 #include <stdio.h>
+#include <string.h>
 
 /* Função principal de um Restaurante. Deve executar um ciclo infinito onde em
  * cada iteração lê uma operação da main e se e data->terminate ainda for igual a 0, processa-a e
@@ -13,15 +14,14 @@
 int execute_restaurant(int rest_id, struct communication_buffers* buffers, struct main_data* data) {
     int counter = 0;
     while (1) {
-        struct operation* op = NULL;
-        restaurant_receive_operation(op, rest_id, buffers, data);
-        if (op != NULL && !*data->terminate) {
-            if (op->id != -1) {
-                restaurant_process_operation(op, rest_id, data, &counter);
-                restaurant_forward_operation(op, buffers, data);
-            }
-        } else if (*data->terminate) {
+        struct operation op;
+        op.id = -1;
+        restaurant_receive_operation(&op, rest_id, buffers, data);
+        if (*data->terminate) {
             return counter;
+        } else if (op.id != -1) {
+            restaurant_process_operation(&op, rest_id, data, &counter);
+            restaurant_forward_operation(&op, buffers, data);
         }
     }
 }
@@ -48,7 +48,7 @@ void restaurant_process_operation(struct operation* op, int rest_id, struct main
     op->receiving_rest = rest_id;
     op->status = 'R';
     *(counter)++;
-    memcpy(data->results+op->id, op, sizeof(struct operation));
+    memcpy(data->results + op->id, op, sizeof(struct operation));
 }
 
 /* Função que escreve uma operação no buffer de memória partilhada entre
