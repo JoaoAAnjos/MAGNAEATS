@@ -71,7 +71,6 @@ void create_shared_memory_buffers(struct main_data* data, struct communication_b
     // result and terminate
     data->results = create_shared_memory(STR_SHM_RESULTS, sizeof(struct operation) * data->max_ops);
     data->terminate = create_shared_memory(STR_SHM_TERMINATE, sizeof(int));
-    *(data->terminate) = 0;
 }
 
 /* Função que inicia os processos dos restaurantes, motoristas e
@@ -203,15 +202,15 @@ void wait_processes(struct main_data* data) {
 void write_statistics(struct main_data* data) {
     printf("Restaurant stats:\n");
     for (int i = 0; i < data->n_restaurants; i++) {
-        printf("%d : %d\n", *(data->restaurant_pids + i), *(data->restaurant_stats + i));
+        printf("%d : %d\n", i, *(data->restaurant_stats + i));
     }
     printf("Driver stats:\n");
     for (int j = 0; j < data->n_drivers; j++) {
-        printf("%d : %d\n", *(data->driver_pids + j), *(data->driver_stats + j));
+        printf("%d : %d\n", j, *(data->driver_stats + j));
     }
     printf("Client stats:\n");
     for (int k = 0; k < data->n_clients; k++) {
-        printf("%d : %d\n", *(data->client_pids + k), *(data->client_stats + k));
+        printf("%d : %d\n", k, *(data->client_stats + k));
     };
 }
 
