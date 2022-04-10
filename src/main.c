@@ -110,7 +110,6 @@ void user_interaction(struct communication_buffers* buffers, struct main_data* d
             read_status(data);
         }
         if (strcmp(command, STOP) == 0) {
-            write_statistics(data);
             stop_execution(data, buffers);
             return;
         }
