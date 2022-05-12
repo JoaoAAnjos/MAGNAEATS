@@ -143,7 +143,6 @@ void create_request(int* op_counter, struct communication_buffers* buffers, stru
         op.receiving_client = -1;
         memcpy(data->results + op.id, &op, sizeof(struct operation));
         write_main_rest_buffer(buffers->main_rest, data->buffers_size, &op);
-        printf("%d", op.id);
         (*op_counter)++;
     } else {
         printf("Operation limit reached");
@@ -261,11 +260,16 @@ int main(int argc, char* argv[]) {
     buffers->driv_cli = create_dynamic_memory(sizeof(struct rnd_access_buffer));
 
     // execute main code
-    main_args(argc, argv, data);
-    create_dynamic_memory_buffers(data);
-    create_shared_memory_buffers(data, buffers);
+    if(argc == 6) {
+        main_args(argc, argv, data);
+        create_dynamic_memory_buffers(data);
+        create_shared_memory_buffers(data, buffers);
 
-    launch_processes(buffers, data);
-    printf(COMMANDS, REQUEST, STATUS, STOP, HELP);
-    user_interaction(buffers, data);
+        launch_processes(buffers, data);
+        printf(COMMANDS, REQUEST, STATUS, STOP, HELP);
+        user_interaction(buffers, data);
+    } else {
+        printf("Invalid starting arguments: not enough arguments");
+    }
+
 }

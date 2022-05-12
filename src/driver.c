@@ -55,5 +55,4 @@ void driver_process_operation(struct operation* op, int driver_id, struct main_d
  */
 void driver_send_answer(struct operation* op, struct communication_buffers* buffers, struct main_data* data) {
     write_driver_client_buffer(buffers->driv_cli, data->buffers_size, op);
-    printf("Driver enviou pedido!\n");
 }

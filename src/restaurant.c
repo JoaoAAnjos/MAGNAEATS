@@ -49,7 +49,6 @@ void restaurant_process_operation(struct operation* op, int rest_id, struct main
     op->status = 'R';
     (*counter)++;
     memcpy(data->results + op->id, op, sizeof(struct operation));
-    op->id = -1;
 }
 
 /* Função que escreve uma operação no buffer de memória partilhada entre
@@ -58,5 +57,4 @@ void restaurant_process_operation(struct operation* op, int rest_id, struct main
  */
 void restaurant_forward_operation(struct operation* op, struct communication_buffers* buffers, struct main_data* data) {
     write_rest_driver_buffer(buffers->rest_driv, data->buffers_size, op);
-    printf("Restaurante enviou pedido!\n");
 }

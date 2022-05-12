@@ -48,4 +48,4 @@ wegucci:
 	cd src && find . | grep -R TODO
 
 grind:
-	valgrind --leak-check=full ./bin/MAGNAEATS
+	valgrind --leak-check=full --show-leak-kinds=all ./bin/MAGNAEATS

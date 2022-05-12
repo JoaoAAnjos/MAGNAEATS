@@ -15,11 +15,11 @@ int execute_client(int client_id, struct communication_buffers* buffers, struct 
     int op_proc = 0;
     while (1) {
         struct operation op;
-        op.id = -1; //To erase
         client_get_operation(&op, client_id, buffers, data);
         if (*data->terminate) {
             return op_proc;
         } else if (op.id != -1) {
+            printf("Cliente recebeu pedido!\n");
             client_process_operation(&op, client_id, data, &op_proc);
         }
     }

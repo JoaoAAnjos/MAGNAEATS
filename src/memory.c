@@ -83,7 +83,7 @@ void write_rest_driver_buffer(struct circular_buffer* buffer, int buffer_size, s
     }
 
     buffer->buffer[buffer->ptrs->in] = *op;
-    buffer->ptrs->in = next;
+    *((short*) (&buffer->ptrs->in)) = (short) next;
 }
 
 void write_driver_client_buffer(struct rnd_access_buffer* buffer, int buffer_size, struct operation* op) {
@@ -91,6 +91,7 @@ void write_driver_client_buffer(struct rnd_access_buffer* buffer, int buffer_siz
         if (buffer->ptrs[i] == 0) {
             buffer->ptrs[i] = 1;
             buffer->buffer[i] = *op;
+            return;
         }
     }
 }
