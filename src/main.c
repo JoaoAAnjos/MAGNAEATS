@@ -1,9 +1,11 @@
 #include "main.h"
 
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+#include "mesignal.h"
 #include "process.h"
 // TODO: REMOVE
 #include "driver.h"
@@ -292,17 +294,34 @@ void destroy_semaphores(struct semaphores* sems) {
     semaphore_destroy(STR_SEM_RESULTS_MUTEX, sems->results_mutex);
 }
 
+struct main_data* data;
+struct communication_buffers* buffers;
+struct semaphores* sems;
+
+void handle_sigint(int sig) {
+    stop_execution(data, buffers, sems);
+}
+
 int main(int argc, char* argv[]) {
     // init data structures
-    struct main_data* data = create_dynamic_memory(sizeof(struct main_data));
-    struct communication_buffers* buffers = create_dynamic_memory(sizeof(struct communication_buffers));
+
+    data = create_dynamic_memory(sizeof(struct main_data));
+    buffers = create_dynamic_memory(sizeof(struct communication_buffers));
+    sems = create_dynamic_memory(sizeof(struct semaphores));
+
     buffers->main_rest = create_dynamic_memory(sizeof(struct rnd_access_buffer));
     buffers->rest_driv = create_dynamic_memory(sizeof(struct circular_buffer));
     buffers->driv_cli = create_dynamic_memory(sizeof(struct rnd_access_buffer));
-    struct semaphores* sems = create_dynamic_memory(sizeof(struct semaphores));
+
     sems->driv_cli = create_dynamic_memory(sizeof(struct prodcons));
     sems->main_rest = create_dynamic_memory(sizeof(struct prodcons));
     sems->rest_driv = create_dynamic_memory(sizeof(struct prodcons));
+
+    // init signal structures
+    struct sigaction sa;
+    sa.sa_handler = &handle_sigint;
+    sa.sa_flags = SA_INTERRUPT;
+    sigaction(SIGINT, &sa, NULL);
 
     // execute main code
     if (argc == 6) {

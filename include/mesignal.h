@@ -1,0 +1,1 @@
+#define SIGN_INTERRUPT "SIGINT"

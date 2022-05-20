@@ -1,0 +1,22 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory '/mnt/c/Users/Pedro Trindade/Documents/GitHub/MAGNAEATS'
+rm -rf obj/*
+rm -rf bin/*
+ 
+mkdir -p obj
+mkdir -p bin
+ 
+make: *** No rule to make target 'client.o', needed by 'compile'.
+
+make: *** No rule to make target 'driver.o', needed by 'compile'.
+
+make: *** No rule to make target 'main.o', needed by 'compile'.
+
+make: *** No rule to make target 'memory.o', needed by 'compile'.
+
+make: *** No rule to make target 'process.o', needed by 'compile'.
+
+make: *** No rule to make target 'restaurant.o', needed by 'compile'.
+
+make: Leaving directory '/mnt/c/Users/Pedro Trindade/Documents/GitHub/MAGNAEATS'
+ 
