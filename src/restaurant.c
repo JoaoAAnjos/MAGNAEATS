@@ -11,17 +11,17 @@
  * operações processadas. Para efetuar estes passos, pode usar os outros
  * métodos auxiliares definidos em restaurant.h.
  */
-int execute_restaurant(int rest_id, struct communication_buffers* buffers, struct main_data* data) {
+int execute_restaurant(int rest_id, struct communication_buffers* buffers, struct main_data* data, struct semaphores* sems) {
     int counter = 0;
     while (1) {
         struct operation op;
-        restaurant_receive_operation(&op, rest_id, buffers, data);
+        restaurant_receive_operation(&op, rest_id, buffers, data, sems);
         if (*data->terminate) {
             return counter;
         } else if (op.id != -1) {
             printf("Restaurante recebeu pedido!\n");
-            restaurant_process_operation(&op, rest_id, data, &counter);
-            restaurant_forward_operation(&op, buffers, data);
+            restaurant_process_operation(&op, rest_id, data, &counter, sems);
+            restaurant_forward_operation(&op, buffers, data, sems);
         }
     }
 }
@@ -32,9 +32,11 @@ int execute_restaurant(int rest_id, struct communication_buffers* buffers, struc
  * verificar se data->terminate tem valor 1.
  * Em caso afirmativo, retorna imediatamente da função.
  */
-void restaurant_receive_operation(struct operation* op, int rest_id, struct communication_buffers* buffers, struct main_data* data) {
+void restaurant_receive_operation(struct operation* op, int rest_id, struct communication_buffers* buffers, struct main_data* data, struct semaphores* sems) {
     if (!*data->terminate) {
+        consume_begin(sems->main_rest);
         read_main_rest_buffer(buffers->main_rest, rest_id, data->buffers_size, op);
+        consume_end(sems->main_rest);
     } else {
         return;
     }
@@ -44,17 +46,21 @@ void restaurant_receive_operation(struct operation* op, int rest_id, struct comm
  * passado como argumento, alterando o estado da mesma para 'R', e
  * incrementando o contador de operações. Atualiza também a operação na estrutura data.
  */
-void restaurant_process_operation(struct operation* op, int rest_id, struct main_data* data, int* counter) {
+void restaurant_process_operation(struct operation* op, int rest_id, struct main_data* data, int* counter, struct semaphores* sems) {
     op->receiving_rest = rest_id;
     op->status = 'R';
     (*counter)++;
+    semaphore_mutex_lock(sems->results_mutex);
     memcpy(data->results + op->id, op, sizeof(struct operation));
+    semaphore_mutex_unlock(sems->results_mutex);
 }
 
 /* Função que escreve uma operação no buffer de memória partilhada entre
  * restaurantes e motoristas, efetuando a necessária sincronização antes e
  * depois de escrever.
  */
-void restaurant_forward_operation(struct operation* op, struct communication_buffers* buffers, struct main_data* data) {
+void restaurant_forward_operation(struct operation* op, struct communication_buffers* buffers, struct main_data* data, struct semaphores* sems) {
+    produce_begin(sems->rest_driv);
     write_rest_driver_buffer(buffers->rest_driv, data->buffers_size, op);
+    produce_end(sems->rest_driv);
 }

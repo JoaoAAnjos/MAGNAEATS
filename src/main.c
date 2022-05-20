@@ -79,15 +79,15 @@ void create_shared_memory_buffers(struct main_data* data, struct communication_b
  * guardando os pids resultantes nos arrays respetivos
  * da estrutura data.
  */
-void launch_processes(struct communication_buffers* buffers, struct main_data* data) {
+void launch_processes(struct communication_buffers* buffers, struct main_data* data, struct semaphores* sems) {
     for (int i = 0; i < data->n_restaurants; i++) {
-        *(data->restaurant_pids + i) = launch_restaurant(i, buffers, data);
+        *(data->restaurant_pids + i) = launch_restaurant(i, buffers, data, sems);
     }
     for (int j = 0; j < data->n_drivers; j++) {
-        *(data->driver_pids + j) = launch_driver(j, buffers, data);
+        *(data->driver_pids + j) = launch_driver(j, buffers, data, sems);
     }
     for (int k = 0; k < data->n_clients; k++) {
-        *(data->client_pids + k) = launch_client(k, buffers, data);
+        *(data->client_pids + k) = launch_client(k, buffers, data, sems);
     }
 }
 
@@ -97,7 +97,7 @@ void launch_processes(struct communication_buffers* buffers, struct main_data* d
  * stop - termina o execução do MAGNAEATS através da função stop_execution
  * help - imprime informação sobre os comandos disponiveis
  */
-void user_interaction(struct communication_buffers* buffers, struct main_data* data) {
+void user_interaction(struct communication_buffers* buffers, struct main_data* data, struct semaphores* sems) {
     char command[COMMAND_MAX_SIZE] = {0};
     int op_counter = 0;
 
@@ -105,13 +105,13 @@ void user_interaction(struct communication_buffers* buffers, struct main_data* d
         scanf("%7s", command);
 
         if (strcmp(command, REQUEST) == 0) {
-            create_request(&op_counter, buffers, data);
+            create_request(&op_counter, buffers, data, sems);
         }
         if (strcmp(command, STATUS) == 0) {
-            read_status(data);
+            read_status(data, sems);
         }
         if (strcmp(command, STOP) == 0) {
-            stop_execution(data, buffers);
+            stop_execution(data, buffers, sems);
             return;
         }
         if (strcmp(command, HELP) == 0) {
@@ -125,7 +125,7 @@ void user_interaction(struct communication_buffers* buffers, struct main_data* d
  * argumento, escrevendo a mesma no buffer de memória partilhada entre main e restaurantes.
  * Imprime o id da operação e incrementa o contador de operações op_counter.
  */
-void create_request(int* op_counter, struct communication_buffers* buffers, struct main_data* data) {
+void create_request(int* op_counter, struct communication_buffers* buffers, struct main_data* data, struct semaphores* sems) {
     if (data->max_ops != *op_counter) {
         struct operation op;
         int cli;
@@ -142,7 +142,9 @@ void create_request(int* op_counter, struct communication_buffers* buffers, stru
         op.receiving_driver = -1;
         op.receiving_client = -1;
         memcpy(data->results + op.id, &op, sizeof(struct operation));
+        produce_begin(sems->main_rest);
         write_main_rest_buffer(buffers->main_rest, data->buffers_size, &op);
+        produce_end(sems->main_rest);
         (*op_counter)++;
     } else {
         printf("Operation limit reached");
@@ -155,9 +157,10 @@ void create_request(int* op_counter, struct communication_buffers* buffers, stru
  * que fez o pedido, o id do restaurante requisitado, o nome do prato pedido
  * e os ids do restaurante, motorista, e cliente que a receberam e processaram.
  */
-void read_status(struct main_data* data) {
+void read_status(struct main_data* data, struct semaphores* sems) {
     int id;
     scanf("%d", &id);
+    semaphore_mutex_lock(sems->results_mutex);
     if ((data->results + id) != NULL) {
         printf("Status:%c\n", (data->results + id)->status);
         printf("Requested restaurant:%d\n", (data->results + id)->requested_rest);
@@ -169,6 +172,7 @@ void read_status(struct main_data* data) {
     } else {
         printf("This operation does not exist");
     }
+    semaphore_mutex_unlock(sems->results_mutex);
 }
 
 /* Função que termina a execução do programa MAGNAEATS. Deve começar por
@@ -178,10 +182,12 @@ void read_status(struct main_data* data) {
  * as zonas de memória partilhada e dinâmica previamente
  * reservadas. Para tal, pode usar as outras funções auxiliares do main.h.
  */
-void stop_execution(struct main_data* data, struct communication_buffers* buffers) {
+void stop_execution(struct main_data* data, struct communication_buffers* buffers, struct semaphores* sems) {
     *data->terminate = 1;
+    wakeup_processes(data, sems);
     wait_processes(data);
     write_statistics(data);
+    destroy_semaphores(sems);
     destroy_memory_buffers(data, buffers);
     // release memory before terminating
     destroy_dynamic_memory(data);
@@ -251,6 +257,41 @@ void destroy_memory_buffers(struct main_data* data, struct communication_buffers
     destroy_shared_memory(STR_SHM_TERMINATE, data->terminate, sizeof(int));
 }
 
+void create_semaphores(struct main_data* data, struct semaphores* sems) {
+    sems->main_rest->full = semaphore_create(STR_SEM_MAIN_REST_FULL, 0);
+    sems->main_rest->empty = semaphore_create(STR_SEM_MAIN_REST_EMPTY, data->buffers_size);
+    sems->main_rest->mutex = semaphore_create(STR_SEM_MAIN_REST_MUTEX, 1);
+
+    sems->rest_driv->full = semaphore_create(STR_SEM_REST_DRIV_FULL, 0);
+    sems->rest_driv->empty = semaphore_create(STR_SEM_REST_DRIV_EMPTY, data->buffers_size);
+    sems->rest_driv->mutex = semaphore_create(STR_SEM_REST_DRIV_MUTEX, 1);
+
+    sems->driv_cli->full = semaphore_create(STR_SEM_DRIV_CLI_FULL, 0);
+    sems->driv_cli->empty = semaphore_create(STR_SEM_DRIV_CLI_EMPTY, data->buffers_size);
+    sems->driv_cli->mutex = semaphore_create(STR_SEM_DRIV_CLI_MUTEX, 1);
+
+    sems->results_mutex = semaphore_create(STR_SEM_RESULTS_MUTEX, 1);
+}
+
+void wakeup_processes(struct main_data* data, struct semaphores* sems) {
+}
+
+void destroy_semaphores(struct semaphores* sems) {
+    semaphore_destroy(STR_SEM_MAIN_REST_FULL, sems->main_rest->full);
+    semaphore_destroy(STR_SEM_MAIN_REST_EMPTY, sems->main_rest->empty);
+    semaphore_destroy(STR_SEM_MAIN_REST_MUTEX, sems->main_rest->mutex);
+
+    semaphore_destroy(STR_SEM_REST_DRIV_FULL, sems->rest_driv->full);
+    semaphore_destroy(STR_SEM_REST_DRIV_EMPTY, sems->rest_driv->empty);
+    semaphore_destroy(STR_SEM_REST_DRIV_MUTEX, sems->rest_driv->mutex);
+
+    semaphore_destroy(STR_SEM_DRIV_CLI_FULL, sems->driv_cli->full);
+    semaphore_destroy(STR_SEM_DRIV_CLI_EMPTY, sems->driv_cli->empty);
+    semaphore_destroy(STR_SEM_DRIV_CLI_MUTEX, sems->driv_cli->mutex);
+
+    semaphore_destroy(STR_SEM_RESULTS_MUTEX, sems->results_mutex);
+}
+
 int main(int argc, char* argv[]) {
     // init data structures
     struct main_data* data = create_dynamic_memory(sizeof(struct main_data));
@@ -258,18 +299,21 @@ int main(int argc, char* argv[]) {
     buffers->main_rest = create_dynamic_memory(sizeof(struct rnd_access_buffer));
     buffers->rest_driv = create_dynamic_memory(sizeof(struct circular_buffer));
     buffers->driv_cli = create_dynamic_memory(sizeof(struct rnd_access_buffer));
+    struct semaphores* sems = create_dynamic_memory(sizeof(struct semaphores));
+    sems->driv_cli = create_dynamic_memory(sizeof(struct prodcons));
+    sems->main_rest = create_dynamic_memory(sizeof(struct prodcons));
+    sems->rest_driv = create_dynamic_memory(sizeof(struct prodcons));
 
     // execute main code
-    if(argc == 6) {
+    if (argc == 6) {
         main_args(argc, argv, data);
         create_dynamic_memory_buffers(data);
         create_shared_memory_buffers(data, buffers);
 
-        launch_processes(buffers, data);
+        launch_processes(buffers, data, sems);
         printf(COMMANDS, REQUEST, STATUS, STOP, HELP);
-        user_interaction(buffers, data);
+        user_interaction(buffers, data, sems);
     } else {
         printf("Invalid starting arguments: not enough arguments");
     }
-
 }

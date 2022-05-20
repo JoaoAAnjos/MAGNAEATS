@@ -10,35 +10,35 @@
 #include "driver.h"
 #include "restaurant.h"
 
-int launch_restaurant(int restaurant_id, struct communication_buffers* buffers, struct main_data* data) {
+int launch_restaurant(int restaurant_id, struct communication_buffers* buffers, struct main_data* data, struct semaphores* sems) {
     int pid = fork();
     if (pid == -1) {
         printf("Error forking in launch_restaurant");
         exit(-1);
     } else if (pid == 0) {
-        exit(execute_restaurant(restaurant_id, buffers, data));
+        exit(execute_restaurant(restaurant_id, buffers, data, sems));
     }
     return pid;
 }
 
-int launch_driver(int driver_id, struct communication_buffers* buffers, struct main_data* data) {
+int launch_driver(int driver_id, struct communication_buffers* buffers, struct main_data* data, struct semaphores* sems) {
     int pid = fork();
     if (pid == -1) {
         printf("Error forking in launch_restaurant");
         exit(-1);
     } else if (pid == 0) {
-        exit(execute_driver(driver_id, buffers, data));
+        exit(execute_driver(driver_id, buffers, data, sems));
     }
     return pid;
 }
 
-int launch_client(int client_id, struct communication_buffers* buffers, struct main_data* data) {
+int launch_client(int client_id, struct communication_buffers* buffers, struct main_data* data, struct semaphores* sems) {
     int pid = fork();
     if (pid == -1) {
         printf("Error forking in launch_restaurant");
         exit(-1);
     } else if (pid == 0) {
-        exit(execute_client(client_id, buffers, data));
+        exit(execute_client(client_id, buffers, data, sems));
     }
     return pid;
 }
