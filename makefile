@@ -37,7 +37,7 @@ compile: $(REQUIREDOBJ)
 ## clean folders
 clean:
 	rm -rf $(OBJDIR)/*
-	rm -rf $(BINDIR)/*
+	rm -rf $(BINDIR)/MAGNAEATS
 
 setup:
 	mkdir -p $(OBJDIR)
