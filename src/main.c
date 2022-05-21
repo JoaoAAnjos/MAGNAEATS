@@ -1,5 +1,6 @@
 #include "main.h"
 #include "process.h"
+#include "configuration.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,6 +21,11 @@
  %s - prints this message\n"
 
 #define COMMAND_MAX_SIZE 8
+#define CHAR_BUFFER_SIZE 100
+
+char* log_filename;
+char* statistics_filename;
+int* alarm_time;
 
 /* Função que lê os argumentos da aplicação, nomeadamente o número
  * máximo de operações, o tamanho dos buffers de memória partilhada
@@ -28,50 +34,28 @@
  * estrutura main_data.
  */
 void main_args(int argc, char* argv[], struct main_data* data) {
-    // TODO: check if enough args
-    data->max_ops = atoi(argv[1]);
-    data->buffers_size = atoi(argv[2]);
-    data->n_restaurants = atoi(argv[3]);
-    data->n_drivers = atoi(argv[4]);
-    data->n_clients = atoi(argv[5]);
+    //TODO: Check if file args are correct (contains all args)
+    FILE* config = openFile(argv[1], "r");
+    char buffer[CHAR_BUFFER_SIZE];
 
-    /*
+    readInt(config, &data->max_ops);
+    readInt(config, &data->buffers_size);
+    readInt(config, &data->n_restaurants);
+    readInt(config, &data->n_drivers);
+    readInt(config, &data->n_clients);
 
-    char linha[MAX_LINE];
-    char filename[MAX_LINE] = argv[1];
+    readString(config, buffer);
+    log_filename = create_dynamic_memory(strlen(buffer)+1);
+    strcpy(log_filename, buffer);
 
-    int input[6];
-    char log_file[MAX_LINE], statistics_filename[MAX_LINE];
+    readString(config, buffer);
+    statistics_filename = create_dynamic_memory(strlen(buffer)+1);
+    strcpy(statistics_filename, buffer);
 
-    FILE *txtfile;
-    txtfile = fopen(filename, "r");
-    if (txtfile == NULL){
-        perror("Ficheiro de dados.");
-        exit(1);
-    }
-
-    for(int i = 0; i < 5; i++){
-        if(fgets(linha, MAX_LINE, txtfile) != NULL){
-            sscanf(linha, "%d", &input[i]);
-        }
-    }
-    if(fgets(linha, MAX_LINE, txtfile) != NULL){
-        sscanf(linha, "%s", log_file);
-    }
-    if(fgets(linha, MAX_LINE, txtfile) != NULL){
-        sscanf(linha, "%s", statistics_filename);
-    }
-    if(fgets(linha, MAX_LINE, txtfile) != NULL){
-            sscanf(linha, "%d", &input[5]);
-    }
-
-    data->max_ops = input[0];
-    data->buffers_size = input[1];
-    data->n_restaurants = input[2];
-    data->n_drivers = input[3];
-    data->n_clients = input[4];
-
-    */
+    alarm_time = create_dynamic_memory(sizeof(int));
+    readInt(config, alarm_time);
+    
+    closeFile(config);
 }
 
 /* Função que reserva a memória dinâmica necessária para a execução
@@ -341,13 +325,17 @@ int main(int argc, char* argv[]) {
 
 
     // execute main code
-    if (argc == 6) {
+    if (argc == 2) {
         main_args(argc, argv, data);
         create_dynamic_memory_buffers(data);
         create_shared_memory_buffers(data, buffers);
 
         launch_processes(buffers, data, sems);
         printf(COMMANDS, REQUEST, STATUS, STOP, HELP);
+        printf("%d", data->max_ops);
+        printf("%s", statistics_filename);
+        printf("%s", log_filename);
+        printf("%d", *alarm_time);
         user_interaction(buffers, data, sems);
     } else {
         printf("Invalid starting arguments: not enough arguments");
