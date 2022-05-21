@@ -40,6 +40,44 @@ void main_args(int argc, char* argv[], struct main_data* data) {
     data->n_restaurants = atoi(argv[3]);
     data->n_drivers = atoi(argv[4]);
     data->n_clients = atoi(argv[5]);
+
+    /*
+
+    char linha[MAX_LINE];
+    char filename[MAX_LINE] = argv[1];
+
+    int input[6];
+    char log_file[MAX_LINE], statistics_filename[MAX_LINE];
+
+    FILE *txtfile;
+    txtfile = fopen(filename, "r");
+    if (txtfile == NULL){
+        perror("Ficheiro de dados.");
+        exit(1);
+    }
+
+    for(int i = 0; i < 5; i++){
+        if(fgets(linha, MAX_LINE, txtfile) != NULL){
+            sscanf(linha, "%d", &input[i]);
+        }
+    }
+    if(fgets(linha, MAX_LINE, txtfile) != NULL){
+        sscanf(linha, "%s", log_file);
+    }
+    if(fgets(linha, MAX_LINE, txtfile) != NULL){
+        sscanf(linha, "%s", statistics_filename);
+    }
+    if(fgets(linha, MAX_LINE, txtfile) != NULL){
+            sscanf(linha, "%d", &input[5]);
+    }
+
+    data->max_ops = input[0];
+    data->buffers_size = input[1];
+    data->n_restaurants = input[2];
+    data->n_drivers = input[3];
+    data->n_clients = input[4];
+
+    */
 }
 
 /* Função que reserva a memória dinâmica necessária para a execução
