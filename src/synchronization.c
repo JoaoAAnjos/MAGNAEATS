@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 sem_t* semaphore_create(char* name, int value) {
     sem_t* sem = sem_open(name, O_CREAT, 0xFFFFFFFF, value);

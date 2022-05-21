@@ -13,7 +13,7 @@ OUTNAME = MAGNAEATS
 
 ## Define objects needed for compilation
 
-REQUIREDOBJ = synchronization.o client.o driver.o main.o memory.o memory-private.o process.o restaurant.o metime.o
+REQUIREDOBJ = client.o configuration.o driver.o file-private.o main.o memory.o memory-private.o process.o restaurant.o synchronization.o 
 
 ## Create flags var
 FLAGS = -fdiagnostics-color=always 

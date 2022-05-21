@@ -1,11 +1,12 @@
 #include "main.h"
+#include "process.h"
+#include "configuration.h"
+#include "metime.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "process.h"
-#include "metime.h"
 
 #define REQUEST "request"
 #define STATUS "status"
@@ -22,6 +23,11 @@
  %s - prints this message\n"
 
 #define COMMAND_MAX_SIZE 8
+#define CHAR_BUFFER_SIZE 100
+
+char* log_filename;
+char* statistics_filename;
+int* alarm_time;
 
 /* Função que lê os argumentos da aplicação, nomeadamente o número
  * máximo de operações, o tamanho dos buffers de memória partilhada
@@ -30,12 +36,28 @@
  * estrutura main_data.
  */
 void main_args(int argc, char* argv[], struct main_data* data) {
-    // TODO: check if enough args
-    data->max_ops = atoi(argv[1]);
-    data->buffers_size = atoi(argv[2]);
-    data->n_restaurants = atoi(argv[3]);
-    data->n_drivers = atoi(argv[4]);
-    data->n_clients = atoi(argv[5]);
+    //TODO: Check if file args are correct (contains all args)
+    FILE* config = openFile(argv[1], "r");
+    char buffer[CHAR_BUFFER_SIZE];
+
+    readInt(config, &data->max_ops);
+    readInt(config, &data->buffers_size);
+    readInt(config, &data->n_restaurants);
+    readInt(config, &data->n_drivers);
+    readInt(config, &data->n_clients);
+
+    readString(config, buffer);
+    log_filename = create_dynamic_memory(strlen(buffer)+1);
+    strcpy(log_filename, buffer);
+
+    readString(config, buffer);
+    statistics_filename = create_dynamic_memory(strlen(buffer)+1);
+    strcpy(statistics_filename, buffer);
+
+    alarm_time = create_dynamic_memory(sizeof(int));
+    readInt(config, alarm_time);
+    
+    closeFile(config);
 }
 
 /* Função que reserva a memória dinâmica necessária para a execução
@@ -162,7 +184,7 @@ void read_status(struct main_data* data, struct semaphores* sems) {
     int id;
     scanf("%d", &id);
     semaphore_mutex_lock(sems->results_mutex);
-    if ((data->results + id) != NULL) {
+    if ((data->results + id)->requested_dish != NULL) {
         printf("Status:%c\n", (data->results + id)->status);
         printf("Requested restaurant:%d\n", (data->results + id)->requested_rest);
         printf("Requesting client:%d\n", (data->results + id)->requesting_client);
@@ -293,6 +315,7 @@ void destroy_semaphores(struct semaphores* sems) {
     semaphore_destroy(STR_SEM_RESULTS_MUTEX, sems->results_mutex);
 }
 
+
 int main(int argc, char* argv[]) {
     // init data structures
     struct main_data* data = create_dynamic_memory(sizeof(struct main_data));
@@ -305,9 +328,11 @@ int main(int argc, char* argv[]) {
     sems->main_rest = create_dynamic_memory(sizeof(struct prodcons));
     sems->rest_driv = create_dynamic_memory(sizeof(struct prodcons));
 
+
     // execute main code
-    if (argc == 6) {
+    if (argc == 2) {
         main_args(argc, argv, data);
+        create_semaphores(data, sems);
         create_dynamic_memory_buffers(data);
         create_shared_memory_buffers(data, buffers);
 
