@@ -141,7 +141,9 @@ void create_request(int* op_counter, struct communication_buffers* buffers, stru
         op.requested_dish = dish;
         op.receiving_driver = -1;
         op.receiving_client = -1;
+        semaphore_mutex_lock(sems->results_mutex);
         memcpy(data->results + op.id, &op, sizeof(struct operation));
+        semaphore_mutex_unlock(sems->results_mutex);
         produce_begin(sems->main_rest);
         write_main_rest_buffer(buffers->main_rest, data->buffers_size, &op);
         produce_end(sems->main_rest);
