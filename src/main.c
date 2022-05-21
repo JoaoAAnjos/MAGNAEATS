@@ -2,6 +2,7 @@
 #include "process.h"
 #include "configuration.h"
 #include "metime.h"
+#include "log.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -125,16 +126,20 @@ void user_interaction(struct communication_buffers* buffers, struct main_data* d
         scanf("%7s", command);
 
         if (strcmp(command, REQUEST) == 0) {
+            logInstruction(log_filename, command);
             create_request(&op_counter, buffers, data, sems);
         }
         if (strcmp(command, STATUS) == 0) {
+            logInstruction(log_filename, command);
             read_status(data, sems);
         }
         if (strcmp(command, STOP) == 0) {
+            logInstruction(log_filename, command);
             stop_execution(data, buffers, sems);
             return;
         }
         if (strcmp(command, HELP) == 0) {
+            logInstruction(log_filename, command);
             printf(COMMANDS, REQUEST, STATUS, STOP, HELP);
         }
     }
@@ -147,13 +152,18 @@ void user_interaction(struct communication_buffers* buffers, struct main_data* d
  */
 void create_request(int* op_counter, struct communication_buffers* buffers, struct main_data* data, struct semaphores* sems) {
     if (data->max_ops != *op_counter) {
+        char args[CHAR_BUFFER_SIZE];
         struct operation op;
         int cli;
         int rest;
         char dish[30] = {0};
+
         scanf("%d", &cli);
         scanf("%d", &rest);
         scanf("%29s", dish);
+        snprintf(args, CHAR_BUFFER_SIZE, "%d %d %s", cli, rest, dish);
+        logArguments(log_filename, args);
+
         op.id = *op_counter;
         op.status = 'I';
         op.requesting_client = cli;
@@ -161,6 +171,7 @@ void create_request(int* op_counter, struct communication_buffers* buffers, stru
         op.requested_dish = dish;
         op.receiving_driver = -1;
         op.receiving_client = -1;
+
         getTime(&op.start_time);
         semaphore_mutex_lock(sems->results_mutex);
         memcpy(data->results + op.id, &op, sizeof(struct operation));
@@ -182,7 +193,12 @@ void create_request(int* op_counter, struct communication_buffers* buffers, stru
  */
 void read_status(struct main_data* data, struct semaphores* sems) {
     int id;
+    char arg[CHAR_BUFFER_SIZE];
+
     scanf("%d", &id);
+    snprintf(arg, CHAR_BUFFER_SIZE, "%d", id);
+    logArguments(log_filename, arg);
+    
     semaphore_mutex_lock(sems->results_mutex);
     if ((data->results + id)->requested_dish != NULL) {
         printf("Status:%c\n", (data->results + id)->status);
