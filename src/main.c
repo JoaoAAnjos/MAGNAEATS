@@ -313,6 +313,12 @@ void create_semaphores(struct main_data* data, struct semaphores* sems) {
 }
 
 void wakeup_processes(struct main_data* data, struct semaphores* sems) {
+    for(int i = 0; data->n_restaurants; i++) {
+        produce_end(sems->rest_driv);
+    }
+    for(int j = 0; data->n_drivers; j++) {
+        produce_end(sems->driv_cli);
+    }
 }
 
 void destroy_semaphores(struct semaphores* sems) {
