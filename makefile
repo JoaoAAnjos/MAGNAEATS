@@ -9,14 +9,14 @@ INCLUDEDIR = include
 OBJDIR = obj
 SRCDIR = src
 BINDIR = bin
-OUTNAME = magnaeats
+OUTNAME = MAGNAEATS
 
 ## Define objects needed for compilation
 
-REQUIREDOBJ = client.o driver.o main.o memory.o process.o restaurant.o
+REQUIREDOBJ = synchronization.o client.o driver.o main.o memory.o memory-private.o process.o restaurant.o 
 
 ## Create flags var
-FLAGS = -lrt -fdiagnostics-color=always
+FLAGS = -fdiagnostics-color=always 
 
 ## Main target
 
@@ -27,16 +27,12 @@ debug: FLAGS +=-g -Wall
 debug: all
 
 ## create obj files
-%.o: $(SRCDIR)/*/%.c
-	$(CC) $(FLAGS) -o $(addprefix $(OBJDIR)/,$@) -c $< -I $(INCLUDEDIR)
-
-## create obj files depth 2
-%.o: $(SRCDIR)/*/*/%.c
-	$(CC) $(FLAGS) -o $(addprefix $(OBJDIR)/,$@) -c $< -I $(INCLUDEDIR)
+%.o: $(SRCDIR)/%.c
+	$(CC) $(FLAGS) -o $(addprefix $(OBJDIR)/,$@) -c $< -I $(INCLUDEDIR) -lrt -lpthread
 
 ## compiles the obj files to an executable
 compile: $(REQUIREDOBJ)
-	$(CC) $(FLAGS) $(addprefix $(OBJDIR)/,$^) -o $(BINDIR)/$(OUTNAME)
+	$(CC) $(FLAGS) $(addprefix $(OBJDIR)/,$^) -o $(BINDIR)/$(OUTNAME) -lrt -lpthread
 
 ## clean folders
 clean:
@@ -52,4 +48,4 @@ wegucci:
 	cd src && find . | grep -R TODO
 
 grind:
-	valgrind --leak-check=full ./bin/MAGNAEATS
+	valgrind --leak-check=full --show-leak-kinds=all ./bin/MAGNAEATS
