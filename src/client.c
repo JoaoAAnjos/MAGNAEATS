@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include "metime.h"
 
 /* Função principal de um Cliente. Deve executar um ciclo infinito onde em
  * cada iteração lê uma operação dos motoristas e se e data->terminate ainda
@@ -36,6 +37,7 @@ void client_get_operation(struct operation* op, int client_id, struct communicat
     consume_begin(sems->driv_cli);
     read_driver_client_buffer(buffers->driv_cli, client_id, data->buffers_size, op);
     consume_end(sems->driv_cli);
+    getTime(&op->client_end_time);
 }
 
 /* Função que processa uma operação, alterando o seu campo receiving_client para o id

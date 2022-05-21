@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include "metime.h"
 
 /* Função principal de um Motorista. Deve executar um ciclo infinito onde em
  * cada iteração lê uma operação dos restaurantes e se a mesma tiver id
@@ -36,6 +37,7 @@ void driver_receive_operation(struct operation* op, struct communication_buffers
         consume_begin(sems->rest_driv);
         read_rest_driver_buffer(buffers->rest_driv, data->buffers_size, op);
         consume_end(sems->rest_driv);
+        getTime(&op->rest_time);
     } else {
         return;
     }
