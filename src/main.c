@@ -179,7 +179,7 @@ void read_status(struct main_data* data, struct semaphores* sems) {
     int id;
     scanf("%d", &id);
     semaphore_mutex_lock(sems->results_mutex);
-    if ((data->results + id) != NULL) {
+    if ((data->results + id)->requested_dish != NULL) {
         printf("Status:%c\n", (data->results + id)->status);
         printf("Requested restaurant:%d\n", (data->results + id)->requested_rest);
         printf("Requesting client:%d\n", (data->results + id)->requesting_client);
@@ -327,15 +327,12 @@ int main(int argc, char* argv[]) {
     // execute main code
     if (argc == 2) {
         main_args(argc, argv, data);
+        create_semaphores(data, sems);
         create_dynamic_memory_buffers(data);
         create_shared_memory_buffers(data, buffers);
 
         launch_processes(buffers, data, sems);
         printf(COMMANDS, REQUEST, STATUS, STOP, HELP);
-        printf("%d", data->max_ops);
-        printf("%s", statistics_filename);
-        printf("%s", log_filename);
-        printf("%d", *alarm_time);
         user_interaction(buffers, data, sems);
     } else {
         printf("Invalid starting arguments: not enough arguments");
