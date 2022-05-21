@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include "metime.h"
 
 /* Função principal de um Restaurante. Deve executar um ciclo infinito onde em
  * cada iteração lê uma operação da main e se e data->terminate ainda for igual a 0, processa-a e
@@ -37,6 +38,7 @@ void restaurant_receive_operation(struct operation* op, int rest_id, struct comm
         consume_begin(sems->main_rest);
         read_main_rest_buffer(buffers->main_rest, rest_id, data->buffers_size, op);
         consume_end(sems->main_rest);
+        getTime(&op->rest_time);
     } else {
         return;
     }

@@ -1,10 +1,12 @@
 #include "main.h"
 #include "process.h"
 #include "configuration.h"
+#include "metime.h"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 
 #define REQUEST "request"
 #define STATUS "status"
@@ -159,6 +161,7 @@ void create_request(int* op_counter, struct communication_buffers* buffers, stru
         op.requested_dish = dish;
         op.receiving_driver = -1;
         op.receiving_client = -1;
+        getTime(&op.start_time);
         semaphore_mutex_lock(sems->results_mutex);
         memcpy(data->results + op.id, &op, sizeof(struct operation));
         semaphore_mutex_unlock(sems->results_mutex);
