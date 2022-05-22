@@ -123,6 +123,7 @@ void launch_processes(struct communication_buffers* buffers, struct main_data* d
 void user_interaction(struct communication_buffers* buffers, struct main_data* data, struct semaphores* sems) {
     char command[COMMAND_MAX_SIZE] = {0};
     int op_counter = 0;
+    set_alarm(*alarm_time, &op_counter);
 
     while (1) {
         scanf("%7s", command);
