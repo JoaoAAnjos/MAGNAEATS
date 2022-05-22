@@ -31,6 +31,8 @@ struct semaphores {
 	sem_t *results_mutex;		// semáforo para exclusão mútua no acesso ao array de resultados
 };
 
+//TODO: REMOVE
+void semaphore_unlinkAll();
 
 /* Função que cria um novo semáforo com nome name e valor inicial igual a
 * value. Pode concatenar o resultado da função getuid() a name, para tornar
