@@ -31,11 +31,18 @@ int execute_client(int client_id, struct communication_buffers* buffers, struct 
  * verificar se data->terminate tem valor 1. Em caso afirmativo, retorna imediatamente da função.
  */
 void client_get_operation(struct operation* op, int client_id, struct communication_buffers* buffers, struct main_data* data, struct semaphores* sems) {
+    consume_begin(sems->driv_cli);
     if (*data->terminate) {
         return;
     }
-    consume_begin(sems->driv_cli);
     read_driver_client_buffer(buffers->driv_cli, client_id, data->buffers_size, op);
+
+    if (op->id == -1) {
+        semaphore_mutex_unlock(sems->driv_cli->full);
+        semaphore_mutex_unlock(sems->driv_cli->mutex);
+        return;
+    }
+    
     consume_end(sems->driv_cli);
     getTime(&op->client_end_time);
 }

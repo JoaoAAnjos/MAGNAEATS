@@ -33,16 +33,14 @@ int execute_driver(int driver_id, struct communication_buffers* buffers, struct 
  * Em caso afirmativo, retorna imediatamente da função.
  */
 void driver_receive_operation(struct operation* op, struct communication_buffers* buffers, struct main_data* data, struct semaphores* sems) {
+    consume_begin(sems->rest_driv);
     if (!*data->terminate) {
-        consume_begin(sems->rest_driv);
-        printf("begin driver\n");
         read_rest_driver_buffer(buffers->rest_driv, data->buffers_size, op);
-        consume_end(sems->rest_driv);
-        printf("end driver\n");
-        getTime(&op->rest_time);
     } else {
         return;
     }
+    consume_end(sems->rest_driv);
+    getTime(&op->rest_time);
 }
 
 /* Função que processa uma operação, alterando o seu campo receiving_driver para o id

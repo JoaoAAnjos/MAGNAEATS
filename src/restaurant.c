@@ -34,14 +34,15 @@ int execute_restaurant(int rest_id, struct communication_buffers* buffers, struc
  * Em caso afirmativo, retorna imediatamente da função.
  */
 void restaurant_receive_operation(struct operation* op, int rest_id, struct communication_buffers* buffers, struct main_data* data, struct semaphores* sems) {
+    consume_begin(sems->main_rest);
     if (!*data->terminate) {
-        consume_begin(sems->main_rest);
         read_main_rest_buffer(buffers->main_rest, rest_id, data->buffers_size, op);
-        consume_end(sems->main_rest);
-        getTime(&op->rest_time);
     } else {
         return;
     }
+    
+    consume_end(sems->main_rest);
+    getTime(&op->rest_time);
 }
 
 /* Função que processa uma operação, alterando o seu campo receiving_rest para o id
