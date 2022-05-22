@@ -10,11 +10,14 @@
 
 #define CHAR_BUFFER_SIZE 100
 
-/**Função da print da instrução para o ficheiro passados nos argumentos
+/**Função escreve a instrução para o ficheiro, passados nos argumentos,
  * juntamente com a data adequada em formato %Y-%m-%d %H:%M:%S
  */
 void logInstruction(char* fileName, char* command);
 
+/* Função escreve para o ficheiro os argumentos do comando,
+ * caso seja um comando com argumentos tipo o request e o status
+ */
 void logArguments(char* fileName, char* arguments);
 
 #endif
