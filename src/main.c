@@ -92,8 +92,11 @@ void create_shared_memory_buffers(struct main_data* data, struct communication_b
     // driv_cli buffer
     buffers->driv_cli->ptrs = create_shared_memory(STR_SHM_DRIVER_CLIENT_PTR, sizeof(int) * data->buffers_size);
     buffers->driv_cli->buffer = create_shared_memory(STR_SHM_DRIVER_CLIENT_BUFFER, sizeof(struct operation) * data->buffers_size);
-    // result and terminate
+
+    // result
     data->results = create_shared_memory(STR_SHM_RESULTS, sizeof(struct operation) * data->max_ops);
+
+    // data terminate
     data->terminate = create_shared_memory(STR_SHM_TERMINATE, sizeof(int));
 }
 
@@ -171,7 +174,10 @@ void create_request(int* op_counter, struct communication_buffers* buffers, stru
         op.status = 'I';
         op.requesting_client = cli;
         op.requested_rest = rest;
-        op.requested_dish = dish;
+
+        op.requested_dish = create_dynamic_memory(strlen(dish));
+        memcpy(op.requested_dish, dish, strlen(dish));
+
         op.receiving_driver = -1;
         op.receiving_client = -1;
         op.receiving_rest = -1;
@@ -290,6 +296,14 @@ void destroy_memory_buffers(struct main_data* data, struct communication_buffers
     destroy_dynamic_memory(data->restaurant_stats);
     destroy_dynamic_memory(data->driver_stats);
     destroy_dynamic_memory(data->client_stats);
+
+    //dishes
+    for (int i = 0; i < data->max_ops; i++) {
+        if ((data->results + i)->requested_dish != NULL) {
+            destroy_dynamic_memory((data->results + i)->requested_dish);
+        }
+    }
+
     // main_rest buffer
     destroy_shared_memory(STR_SHM_MAIN_REST_PTR, buffers->main_rest->ptrs, sizeof(int) * data->buffers_size);
     destroy_shared_memory(STR_SHM_MAIN_REST_BUFFER, buffers->main_rest->buffer, sizeof(struct operation) * data->buffers_size);
@@ -321,13 +335,13 @@ void create_semaphores(struct main_data* data, struct semaphores* sems) {
 }
 
 void wakeup_processes(struct main_data* data, struct semaphores* sems) {
-    for(int i = 0; i < data->n_clients; i++) {
+    for(int i = 0; i < data->n_restaurants; i++) {
         produce_end(sems->main_rest);
     }
-    for(int j = 0; j < data->n_restaurants; j++) {
+    for(int j = 0; j < data->n_drivers; j++) {
         produce_end(sems->rest_driv);
     }
-    for(int k = 0; k < data->n_drivers; k++) {
+    for(int k = 0; k < data->n_clients; k++) {
         produce_end(sems->driv_cli);
     }
 }
@@ -378,7 +392,6 @@ int main(int argc, char* argv[]) {
 
     // execute main code
     if (argc == 2) {
-        setup_stop(data, buffers, sems);
         main_args(argc, argv, data);
         semaphore_unlinkAll(); //TODO remove
         create_semaphores(data, sems);
@@ -386,6 +399,7 @@ int main(int argc, char* argv[]) {
         create_shared_memory_buffers(data, buffers);
 
         launch_processes(buffers, data, sems);
+        setup_stop(data, buffers, sems);
         printf(COMMANDS, REQUEST, STATUS, STOP, HELP);
         user_interaction(buffers, data, sems);
     } else {
