@@ -124,7 +124,7 @@ void user_interaction(struct communication_buffers* buffers, struct main_data* d
 
     while (1) {
         scanf("%7s", command);
-
+        //TODO Shorten log instruction
         if (strcmp(command, REQUEST) == 0) {
             logInstruction(log_filename, command);
             create_request(&op_counter, buffers, data, sems);
@@ -171,6 +171,7 @@ void create_request(int* op_counter, struct communication_buffers* buffers, stru
         op.requested_dish = dish;
         op.receiving_driver = -1;
         op.receiving_client = -1;
+        op.receiving_rest = -1;
 
         getTime(&op.start_time);
         semaphore_mutex_lock(sems->results_mutex);
@@ -344,6 +345,7 @@ void destroy_semaphores(struct semaphores* sems) {
     semaphore_destroy(STR_SEM_RESULTS_MUTEX, sems->results_mutex);
 }
 
+//TODO remove
 void semaphore_unlinkAll() {
     sem_unlink("sem_main_rest_full");
     sem_unlink("sem_main_rest_empty");
@@ -374,7 +376,7 @@ int main(int argc, char* argv[]) {
     // execute main code
     if (argc == 2) {
         main_args(argc, argv, data);
-        semaphore_unlinkAll();
+        semaphore_unlinkAll(); //TODO remove
         create_semaphores(data, sems);
         create_dynamic_memory_buffers(data);
         create_shared_memory_buffers(data, buffers);
