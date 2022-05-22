@@ -38,6 +38,7 @@ int* alarm_time;
  */
 void main_args(int argc, char* argv[], struct main_data* data) {
     //TODO: Check if file args are correct (contains all args)
+    //TODO Pass this to configuration.c ?
     FILE* config = openFile(argv[1], "r");
     char buffer[CHAR_BUFFER_SIZE];
 
