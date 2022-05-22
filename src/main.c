@@ -1,8 +1,9 @@
-#include "main.h"
-#include "process.h"
 #include "configuration.h"
-#include "metime.h"
 #include "log.h"
+#include "main.h"
+#include "metime.h"
+#include "mesignal.h"
+#include "process.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -376,6 +377,7 @@ int main(int argc, char* argv[]) {
 
     // execute main code
     if (argc == 2) {
+        setup_stop(data, buffers, sems);
         main_args(argc, argv, data);
         semaphore_unlinkAll(); //TODO remove
         create_semaphores(data, sems);
