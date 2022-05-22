@@ -4,6 +4,7 @@
 #include "metime.h"
 #include "mesignal.h"
 #include "process.h"
+#include "stats.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -30,6 +31,7 @@
 char* log_filename;
 char* statistics_filename;
 int* alarm_time;
+int* g_op_counter;
 
 /* Função que lê os argumentos da aplicação, nomeadamente o número
  * máximo de operações, o tamanho dos buffers de memória partilhada
@@ -126,6 +128,7 @@ void launch_processes(struct communication_buffers* buffers, struct main_data* d
 void user_interaction(struct communication_buffers* buffers, struct main_data* data, struct semaphores* sems) {
     char command[COMMAND_MAX_SIZE] = {0};
     int op_counter = 0;
+    g_op_counter = &op_counter;
     set_alarm(*alarm_time, &op_counter);
 
     while (1) {
@@ -266,6 +269,7 @@ void wait_processes(struct main_data* data) {
  * operações foram processadas por cada restaurante, motorista e cliente.
  */
 void write_statistics(struct main_data* data) {
+    writeStats(data, statistics_filename, *g_op_counter);
     printf("Restaurant stats:\n");
     for (int i = 0; i < data->n_restaurants; i++) {
         printf("%d : %d\n", i, *(data->restaurant_stats + i));
