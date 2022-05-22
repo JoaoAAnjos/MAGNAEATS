@@ -21,7 +21,7 @@ void setup_stop(struct main_data* data, struct communication_buffers* buffers, s
 }
 
 void handle_sigint(int sig) {
-    printf("Stop signal caught\n");
+    printf("\nStop signal caught\n\n");
     stop_execution(pdata, pbuffers, psems);
     exit(0);
 }

@@ -393,7 +393,7 @@ int main(int argc, char* argv[]) {
     // execute main code
     if (argc == 2) {
         main_args(argc, argv, data);
-        semaphore_unlinkAll(); //TODO remove
+        semaphore_unlinkAll(); // TODO remove
         create_semaphores(data, sems);
         create_dynamic_memory_buffers(data);
         create_shared_memory_buffers(data, buffers);

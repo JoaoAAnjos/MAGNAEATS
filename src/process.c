@@ -47,7 +47,11 @@ int wait_process(int process_id) {
     int status;
     waitpid(process_id, &status, 0);
     if (!WIFEXITED(status)) {
-        printf("Error in wait_process");
+        if (WEXITSTATUS(status) == 0) {
+            return WEXITSTATUS(status);
+        }
+        
+        printf("Error waiting for processes: %d\n", WEXITSTATUS(status));
         exit(-1);
     }
     return WEXITSTATUS(status);
