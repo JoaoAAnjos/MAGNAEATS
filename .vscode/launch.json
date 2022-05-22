@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${workspaceFolder}/bin/MAGNAEATS",
             "args": [
-                "bin/input.txt"
+                "${workspaceFolder}/bin/input.txt"
             ],
             "stopAtEntry": false,
             "cwd": "${fileDirname}",

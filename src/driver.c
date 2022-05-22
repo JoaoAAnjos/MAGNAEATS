@@ -38,6 +38,10 @@ void driver_receive_operation(struct operation* op, struct communication_buffers
         read_rest_driver_buffer(buffers->rest_driv, data->buffers_size, op);
         consume_end(sems->rest_driv);
         getTime(&op->rest_time);
+        if(op->id == (-1)){
+            semaphore_mutex_unlock(sems->rest_driv->full);
+            semaphore_mutex_lock(sems->rest_driv->empty);
+        }
     } else {
         return;
     }

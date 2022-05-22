@@ -234,6 +234,10 @@ void stop_execution(struct main_data* data, struct communication_buffers* buffer
     destroy_dynamic_memory(buffers->rest_driv);
     destroy_dynamic_memory(buffers->driv_cli);
     destroy_dynamic_memory(buffers);
+    destroy_dynamic_memory(sems->driv_cli);
+    destroy_dynamic_memory(sems->main_rest);
+    destroy_dynamic_memory(sems->rest_driv);
+    destroy_dynamic_memory(sems);
 }
 
 /* Função que espera que todos os processos previamente iniciados terminem,
@@ -313,10 +317,13 @@ void create_semaphores(struct main_data* data, struct semaphores* sems) {
 }
 
 void wakeup_processes(struct main_data* data, struct semaphores* sems) {
-    for(int i = 0; data->n_restaurants; i++) {
+    for(int i = 0; i < data->n_clients; i++) {
+        produce_end(sems->main_rest);
+    }
+    for(int j = 0; j < data->n_restaurants; j++) {
         produce_end(sems->rest_driv);
     }
-    for(int j = 0; data->n_drivers; j++) {
+    for(int k = 0; k < data->n_drivers; k++) {
         produce_end(sems->driv_cli);
     }
 }
@@ -337,6 +344,19 @@ void destroy_semaphores(struct semaphores* sems) {
     semaphore_destroy(STR_SEM_RESULTS_MUTEX, sems->results_mutex);
 }
 
+void semaphore_unlinkAll() {
+    sem_unlink("sem_main_rest_full");
+    sem_unlink("sem_main_rest_empty");
+    sem_unlink("sem_main_rest_mutex");
+    sem_unlink("sem_rest_driv_full");
+    sem_unlink("sem_rest_driv_empty");
+    sem_unlink("sem_rest_driv_mutex");
+    sem_unlink("sem_driv_cli_full");
+    sem_unlink("sem_driv_cli_empty");
+    sem_unlink("sem_driv_cli_mutex");
+    sem_unlink("sem_results_mutex");
+}
+
 
 int main(int argc, char* argv[]) {
     // init data structures
@@ -354,6 +374,7 @@ int main(int argc, char* argv[]) {
     // execute main code
     if (argc == 2) {
         main_args(argc, argv, data);
+        semaphore_unlinkAll();
         create_semaphores(data, sems);
         create_dynamic_memory_buffers(data);
         create_shared_memory_buffers(data, buffers);

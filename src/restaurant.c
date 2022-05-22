@@ -39,6 +39,10 @@ void restaurant_receive_operation(struct operation* op, int rest_id, struct comm
         read_main_rest_buffer(buffers->main_rest, rest_id, data->buffers_size, op);
         consume_end(sems->main_rest);
         getTime(&op->rest_time);
+        if(op->id == (-1)){
+            semaphore_mutex_unlock(sems->main_rest->full);
+            semaphore_mutex_lock(sems->main_rest->empty);
+        }
     } else {
         return;
     }

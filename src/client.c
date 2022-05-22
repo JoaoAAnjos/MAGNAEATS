@@ -31,13 +31,18 @@ int execute_client(int client_id, struct communication_buffers* buffers, struct 
  * verificar se data->terminate tem valor 1. Em caso afirmativo, retorna imediatamente da função.
  */
 void client_get_operation(struct operation* op, int client_id, struct communication_buffers* buffers, struct main_data* data, struct semaphores* sems) {
-    if (*data->terminate) {
+    if (!*data->terminate) {
+        consume_begin(sems->driv_cli);
+        read_driver_client_buffer(buffers->driv_cli, client_id, data->buffers_size, op);
+        consume_end(sems->driv_cli);
+        getTime(&op->client_end_time);
+        if(op->id == (-1)){
+            semaphore_mutex_unlock(sems->driv_cli->full);
+            semaphore_mutex_lock(sems->driv_cli->empty);
+        }
+    } else {
         return;
     }
-    consume_begin(sems->driv_cli);
-    read_driver_client_buffer(buffers->driv_cli, client_id, data->buffers_size, op);
-    consume_end(sems->driv_cli);
-    getTime(&op->client_end_time);
 }
 
 /* Função que processa uma operação, alterando o seu campo receiving_client para o id
