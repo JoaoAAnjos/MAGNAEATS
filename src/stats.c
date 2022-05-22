@@ -14,11 +14,11 @@ void writeStats(struct main_data* data, char* fileName, int op_counter) {
         fprintf(file, "Client %d received %d requests!\n", k, *(data->client_stats + k));
     };
 
-    fprintf(file, "Request Statistics\n");
+    fprintf(file, "\nRequest Statistics\n");
     for(int i = 0; i < op_counter; i++) {
         if((data->results + i)->status == 'C') {
-            fprintf(file, "Request: %d\nStatus: %c\n Restaurant id: %d\n"
-                    "Driver id:%d\n Client id:%d\n",
+            fprintf(file, "Request: %d\nStatus: %c\nRestaurant id: %d\n"
+                    "Driver id:%d\nClient id:%d\n",
                     i,
                     (data->results + i)->status,
                     (data->results + i)->receiving_rest,
