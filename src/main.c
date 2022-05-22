@@ -297,6 +297,11 @@ void destroy_memory_buffers(struct main_data* data, struct communication_buffers
     destroy_dynamic_memory(data->driver_stats);
     destroy_dynamic_memory(data->client_stats);
 
+    //args
+    destroy_dynamic_memory(log_filename);
+    destroy_dynamic_memory(statistics_filename);
+    destroy_dynamic_memory(alarm_time);
+
     //dishes
     for (int i = 0; i < data->max_ops; i++) {
         if ((data->results + i)->requested_dish != NULL) {
