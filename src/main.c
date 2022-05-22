@@ -238,12 +238,8 @@ void stop_execution(struct main_data* data, struct communication_buffers* buffer
     write_statistics(data);
     destroy_semaphores(sems);
     destroy_memory_buffers(data, buffers);
-    // release memory before terminating
-    destroy_dynamic_memory(data);
-    destroy_dynamic_memory(buffers->main_rest);
-    destroy_dynamic_memory(buffers->rest_driv);
-    destroy_dynamic_memory(buffers->driv_cli);
-    destroy_dynamic_memory(buffers);
+    
+    // must be done here porque destroy_memory_buffers nao conhece semaphores
     destroy_dynamic_memory(sems->driv_cli);
     destroy_dynamic_memory(sems->main_rest);
     destroy_dynamic_memory(sems->rest_driv);
@@ -321,6 +317,12 @@ void destroy_memory_buffers(struct main_data* data, struct communication_buffers
     // result and terminate
     destroy_shared_memory(STR_SHM_RESULTS, data->results, sizeof(struct operation));
     destroy_shared_memory(STR_SHM_TERMINATE, data->terminate, sizeof(int));
+
+    destroy_dynamic_memory(data);
+    destroy_dynamic_memory(buffers->main_rest);
+    destroy_dynamic_memory(buffers->rest_driv);
+    destroy_dynamic_memory(buffers->driv_cli);
+    destroy_dynamic_memory(buffers);
 }
 
 void create_semaphores(struct main_data* data, struct semaphores* sems) {
