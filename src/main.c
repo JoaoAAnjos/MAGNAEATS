@@ -175,8 +175,8 @@ void create_request(int* op_counter, struct communication_buffers* buffers, stru
         op.requesting_client = cli;
         op.requested_rest = rest;
 
-        op.requested_dish = create_dynamic_memory(strlen(dish));
-        memcpy(op.requested_dish, dish, strlen(dish));
+        op.requested_dish = create_dynamic_memory(strlen(dish) + 1);
+        memcpy(op.requested_dish, dish, strlen(dish) + 1);
 
         op.receiving_driver = -1;
         op.receiving_client = -1;
