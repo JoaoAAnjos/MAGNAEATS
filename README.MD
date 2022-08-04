@@ -1,4 +1,4 @@
-# Operative Systems Project
+# Operating Systems Project
 
 ## Assignment
 
