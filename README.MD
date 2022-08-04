@@ -8,7 +8,7 @@
 
 ## About
 
-This project was developed in the context of a Operating Systems class while taking software engineering at FCUL. The main goal of the project was to develop an application on C, that would mimic a system of requests and answers, similar to a food-delivery app (hence the name MagnaEats). There are three types of participants, through which the messages (requests) flow: clients, restaurants and drivers. 
+This project was developed in the Operating Systems class while taking software engineering at FCUL. The main goal of the project was to develop an application on C, that would mimic a system of requests and answers, similar to a food-delivery app (hence the name MagnaEats). There are three types of participants, through which the messages (requests) flow: clients, restaurants and drivers. 
 The project was developed in two phases: 
 * The first one focused on process management, memory allocation and the creation of the makefile, all essential knowledge to develop an app in C.
 * The second focused on Synchronization (concurrent memory acess) ,implemented through the use of semaphores, file handling and signals.
