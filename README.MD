@@ -2,9 +2,16 @@
 
 ## Assignment
 
-[Phase-1](https://github.com/vicentecsousa/MAGNAEATS/blob/master/rsc/so2021_2022-projecto1-fase1.pdf)
+[Phase-1](https://github.com/JoaoAAnjos/MAGNAEATS/blob/master/rsc/so2021_2022-projecto1-fase1.pdf)
 
-[Phase-2](https://github.com/vicentecsousa/MAGNAEATS/blob/master/rsc/so2021_2022-projecto2_v3.pdf)
+[Phase-2](https://github.com/JoaoAAnjos/MAGNAEATS/blob/master/rsc/so2021_2022-projecto2_v3.pdf)
+
+## About
+
+This project was developed in the context of a Operating Systems class while taking software engineering at FCUL. The main goal of the project was to develop an application on C, that would mimic a system of requests and answers, similar to a food-delivery app (hence the name MagnaEats). There are three types of participants, through which the messages (requests) flow: clients, restaurants and drivers. 
+The project was developed in two phases: 
+-The first one focused on process management, memory allocation and the creation of the makefile, all essential knowledge to develop an app in C.
+-The second focused on Synchronization (concurrent memory acess) ,implemented through the use of semaphores, file handling and signals.
 
 ## How to use
 
@@ -13,8 +20,8 @@
 Use one of the following
 
 ```sh
-git clone https://github.com/vicentecsousa/MAGNAEATS.git
-git clone git@github.com:vicentecsousa/MAGNAEATS.git
+git clone https://github.com/JoaoAAnjos/MAGNAEATS.git
+git clone git@github.com:JoaoAAnjos/MAGNAEATS.git
 ```
 
 then cd to the folder
@@ -30,6 +37,8 @@ cd MAGNAEATS
 make
 ## Debug
 make debug
+## All
+make all
 ```
 
 ### 3. Test
@@ -45,7 +54,7 @@ make test
 ### 4. Run
 
 ```sh
-./bin/magnaeats [max_ops] [buffers_size] [n_restaurants n_drivers] [n_clients]
+./bin/magnaeats [max_ops] [buffers_size] [n_restaurants] [n_drivers] [n_clients]
 ```
 
 
