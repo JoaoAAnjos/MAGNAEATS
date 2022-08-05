@@ -1,4 +1,4 @@
-# Operating Systems Project
+# MagnaEats
 
 ## Assignment
 
